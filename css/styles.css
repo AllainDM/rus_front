@@ -1,0 +1,49 @@
+
+
+body {
+    
+    font-size: 24px;
+    background: #727573;
+    /* background-image: url("images/поселение1.jpg");; */
+    /* font-family: Verdana, Arial; */
+    font-family: 'Times New Roman', Times, serif;
+    padding: 0px;
+    /* width: 75%; */
+    margin: 0 auto;
+    
+    scrollbar-width: auto;
+    scrollbar-color: rgb(2, 80, 2) black;
+    /* overflow-y: scroll; */
+    /* overflow-x: scroll; */
+
+}
+
+
+ul.mainmenu {
+    /* font-family: 'myFonts', Times, serif; */
+    text-align: center;
+	list-style: none;
+	/* background: #4b4b4b; */
+	background: #222121;
+	height: 45px;
+	margin: 0;
+	padding: 0;
+	color: white;
+	font-size: 20px;
+	overflow: hidden;
+    /* width: 75%; */
+}
+ul.mainmenu li {
+    /* display: inline-block; */
+	float: left;
+	margin: 10px 5% 0 30px;
+}
+ul.mainmenu li.last {float: right;}
+
+ul.mainmenu li a {
+	color: white;
+	text-decoration: none;
+}
+ul.mainmenu li a:hover {
+	color: white;
+}
