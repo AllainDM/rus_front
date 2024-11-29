@@ -1,36 +1,5 @@
 console.log('Стрипт странички выбора игры успешно загружен');
 
-// Выведем список меню
-
-document.addEventListener("DOMContentLoaded", function () {
-    // Определяем массив с элементами меню
-    const menuItems = [
-        { name: "Профиль", link: "profile" },
-        { name: "Игра", link: "game" },
-        { name: "Выбор игры", link: "choose-game.html" },
-        { name: "Игроки", link: "players" },
-        { name: "Лог", link: "log" }
-    ];
-
-    // Функция для загрузки и отображения меню
-    function loadMenu() {
-        const menuList = document.getElementById('menu');
-        menuList.innerHTML = ''; // Очистка текущего меню
-
-        // Проходим по массиву и создаем элементы списка
-        menuItems.forEach(item => {
-            const li = document.createElement('li'); // Создаем элемент списка
-            const a = document.createElement('a');    // Создаем ссылку
-            a.textContent = item.name;               // Устанавливаем текст ссылки
-            a.href = item.link;                       // Устанавливаем атрибут href
-            li.appendChild(a);                        // Добавляем ссылку в элемент списка
-            menuList.appendChild(li);                 // Добавляем элемент списка в меню
-        });
-    }
-
-    // Вызываем функцию для отображения меню
-    loadMenu();
-});
 
 
 // Будущий список выбора игры
