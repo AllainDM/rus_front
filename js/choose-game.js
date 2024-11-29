@@ -10,28 +10,32 @@ const chooseNewGameList = document.querySelector('.choose-new-game');
 const createNewGameList = document.querySelector('.create-new-game');
 
 // Запрос статуса для отображения выбора одной из своих игр
-function requestStatus() {
-    const request = new XMLHttpRequest();
-    request.open('GET', '/load_all_my_game');
-    request.addEventListener('load', () => {
-        if (request.status === 200) {
-            if (request.response == "") {
-                console.log("К нам пришла пустая строка");
-                
-            } else {
-                const response = JSON.parse(request.response);
-                console.log(response);
-                console.log("Ответ от сервера");
-                chooseGame(response);
-            };
-        } else {
-            console.log("Ответ от сервера не получен");
-        }
-    });
-    request.send();
+async function requestStatusMyGames() {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`http://localhost:8000/my_games`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок
+                'Content-Type': 'application/json',
+            },
+        });
 
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        games = await response.json()
+        console.log(games);
+        // console.log(response);
+        chooseGame(games);
+        // return await response.json(); // возвращаем JSON данные
+    } catch (error) {
+        console.error('Ошибка при получении меню:', error);
+        // return false; // возвращаем false в случае ошибки
+    }
 }
-requestStatus();
+
+requestStatusMyGames();
 // Функция выбора игры. 
 
 function chooseGame(gamesList) {
@@ -46,36 +50,37 @@ function chooseGame(gamesList) {
         chooseList.innerHTML +=         // Игра номер: ${gamesList.game_id}   class="menu-btn menu-buttons-choose"
         `<div class="standart-window" style="font-size: 16px;">
             <button style="margin: auto" class="btn btn-choose-game">Войти</button>
-            Игра № ${item}
+            Игра № ${item.row_id}
         </div>`;  //   ид: ${id}
     });
-
+}
 
 // Запрос статуса для отображения выбора новой игры
-function requestStatusForNewGame() {
-    const request = new XMLHttpRequest();
-    request.open('GET', '/load_all_new_games');
-    request.addEventListener('load', () => {
-        if (request.status === 200) {
-            if (request.response == "") {
-                console.log("К нам пришла пустая строка");
-                
-            } else {
-                const response = JSON.parse(request.response);
-                console.log(response);
-                console.log("Ответ от сервера");
-                chooseNewGame(response);
-            };
-        } else {
-            console.log("Ответ от сервера не получен");
+async function requestStatusForNewGame() {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`http://localhost:8000/all_active_games`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
         }
-    });
-    request.send();
-};
-requestStatusForNewGame();
+        games = await response.json()
+        console.log(games);
+        // console.log(response);
+        chooseNewGame(games);
+        // return await response.json(); // возвращаем JSON данные
+    } catch (error) {
+        console.error('Ошибка при получении меню:', error);
+        // return false; // возвращаем false в случае ошибки
+    }
 
-// Отдельно запросим список игроков для каждой игры
-
+    // Отдельно запросим список игроков для каждой игры
 
     // Определяем позицию кнопки и "создаем" соответсвующий приказ
     document.querySelectorAll(".btn-choose-game").forEach((btn, i) => {
@@ -88,6 +93,8 @@ requestStatusForNewGame();
         });
     });
 };
+
+requestStatusForNewGame();
 
 
 function chooseNewGame(gamesList) {
@@ -106,16 +113,18 @@ function chooseNewGame(gamesList) {
     `;  // Добавим подсказку
     const tableNewGames = document.querySelector(".table-new-games");
     gamesList.forEach((item, id) => {
+        console.log(`item ${item}`);
+
         // chooseList.innerHTML += `<div class="menu-btn menu-buttons-choose"><a href="{{url_for('game')}}">Игра номер: ${item}</a></div>`; 
         // <div class="menu-btn menu-buttons-choose">
         tableNewGames.innerHTML += `
             <tr class="main-background" style="font-size: 18px;">
-                <td>${item[0][0]}</td>
-                <td>${item[0][4]}</td>
-                <td>${item[0][3]}</td>
-                <td>${item[0][5].length}</td>
-                <td>${item[0][7]}</td>
-                <td>${item[1]}</td>
+                <td>${item["row_id"]}</td>
+                <td>${item["year"]}</td>
+                <td>${item["turn"]}</td>
+                <td>${item["players"].length}</td>
+                <td>${item["max_players"]}</td>
+                <td>${item["players"]}</td>
                 <td><button class="enter-new-game">Присоединиться</button></td>
             </tr>`;  //   ид: ${id}
     });

@@ -8,7 +8,7 @@ async function showMenu() {
         // Определяем массив с элементами меню
         let menuItems = await getMenu(); // ждем результат getMenu()
 
-        console.log(menuItems);
+        // console.log(menuItems);
 
         // Проверяем, получили ли мы данные
         if (menuItems && Array.isArray(menuItems) && menuItems.length > 0) {
@@ -54,7 +54,7 @@ async function getMenu() {
 function loadMenu(menuItems) {
     const menuList = document.getElementById('menu');
     menuList.innerHTML = ''; // Очистка текущего меню
-    console.log(menuItems);
+    // console.log(menuItems);
 
     // Проходим по массиву и создаем элементы списка
     menuItems.forEach(item => {
