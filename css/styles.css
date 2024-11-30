@@ -18,7 +18,7 @@ body {
 
 }
 
-
+/* Кнопки выбора меню */
 ul.mainmenu {
     /* font-family: 'myFonts', Times, serif; */
     text-align: center;
@@ -46,4 +46,28 @@ ul.mainmenu li a {
 }
 ul.mainmenu li a:hover {
 	color: white;
+}
+.container {
+	width: 1024px;
+}
+
+/* Стандартные серые окошки */
+.standart-window {
+    margin-top: 10px;
+    margin-left: 30px;
+    background: rgb(206, 204, 198); /* Цвет фона */
+    outline: 1px solid #000; 
+    border: 1px solid #fff; 
+    border-radius: 1px; 
+}
+
+/* Меню выбора игры*/
+.choose-list {
+    overflow: scroll; /* Добавляем полосы прокрутки */
+    max-height: 285px; /* Высота блока */
+    padding: 5px; /* Поля вокруг текста */
+    width: 95%;
+}
+.menu-buttons-choose {
+    font-size: 12pt;
 }

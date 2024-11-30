@@ -102,7 +102,7 @@ function chooseNewGame(gamesList) {
     chooseNewGameList.innerHTML += `
     <table class="table-new-games" style="margin-top: 10px" border="1">
         <tr>
-            <td style="font-size: 18px; width: 45px;">ИД</td>
+            <td style="font-size: 18px; width: 45px;">№</td>
             <td style="font-size: 18px; width: 45px;">Год</td>
             <td style="font-size: 18px; width: 45px;">Ход</td>
             <td style="font-size: 16px;">Кол-во <br> игроков</td>
@@ -132,30 +132,32 @@ function chooseNewGame(gamesList) {
     // Определяем позицию кнопки и "создаем" соответсвующий приказ
     document.querySelectorAll(".enter-new-game").forEach((btn, i) => {
         btn.addEventListener('click', () => {
-            console.log(`Вы выбрали игру номер: ${gamesList[i][0][0]}`);
-            addPlayerToGame(gamesList[i][0][0]);
+            console.log(`Вы выбрали игру номер: ${gamesList[i]["row_id"]}`);
+            addPlayerToGame(gamesList[i]["row_id"]);
         });
     });
 };
 
 // Добавить игрока в запись в БД к выбранной игре
-function addPlayerToGame(id){
-    const req = new XMLHttpRequest();
-    req.open("GET", `/add_player_to_game?id=${id}`);
-    req.addEventListener('load', () => {
-        console.log("Xmmm");
-        window.location.href = 'choose-game';
-        // То что ниже в комментах оставим, интересно....
-        // Если ответ есть, запустить функцию отображения
-        // if (response) {
-            // writeComment(response, id);
-        // };
-    });
-    req.addEventListener('error', () => {
-        console.log('error')
-    });
-    req.send();
-    // !!!!!!!! Надо обновить страничку
+async function addPlayerToGame(game_id){
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`http://localhost:8000/add_player_to_game?game_id=${game_id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        window.location.href = 'choose-game.html';
+    } catch (error) {
+        console.error('Ошибка при получении меню:', error);
+        // return false; // возвращаем false в случае ошибки
+    }
 };
 
 // При выборе игры, эта игра становится активной для бекенда и сразу идет перенаправление на страничку игры, скачивается "активная" игра с бека
