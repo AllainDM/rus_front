@@ -71,3 +71,10 @@ ul.mainmenu li a:hover {
 .menu-buttons-choose {
     font-size: 12pt;
 }
+
+/* Боковое меню */
+
+aside {
+    float: left;
+    width: 200px;
+}

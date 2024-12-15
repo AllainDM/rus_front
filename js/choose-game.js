@@ -53,6 +53,16 @@ function chooseGame(gamesList) {
             Игра № ${item.row_id}
         </div>`;  //   ид: ${id}
     });
+
+    // Получаем все кнопки после добавления их в DOM
+    const buttons = document.querySelectorAll('.btn-choose-game');
+    buttons.forEach((btn, i) => {
+            btn.addEventListener('click', () => {
+                console.log(`тутутт`);
+                console.log(`Вы выбрали игру номер: ${gamesList[i]["row_id"]}`);
+                setActiveGame(gamesList[i]["row_id"]); // Установить активную игру, ее данные будет отправлять бек при обновлении и загрузке новой страницы 
+            });
+        });
 }
 
 // Запрос статуса для отображения выбора новой игры
@@ -76,22 +86,22 @@ async function requestStatusForNewGame() {
         chooseNewGame(games);
         // return await response.json(); // возвращаем JSON данные
     } catch (error) {
-        console.error('Ошибка при получении меню:', error);
+        console.error('Ошибка при получении списка игр:', error);
         // return false; // возвращаем false в случае ошибки
     }
 
     // Отдельно запросим список игроков для каждой игры
 
-    // Определяем позицию кнопки и "создаем" соответсвующий приказ
-    document.querySelectorAll(".btn-choose-game").forEach((btn, i) => {
-        btn.addEventListener('click', () => {
-            console.log(`тутутт`);
-            console.log(`Вы выбрали игру номер: ${gamesList[i][0]}`);
-            // console.log(`Вы выбрали игру номер: ${gamesList[i]}`);
-            console.log(`Вы выбрали игру номер: ${i+1}`);
-            setActiveGame(gamesList[i][0]); // Установить активную игру, ее данные будет отправлять бек при обновлении и загрузке новой страницы 
-        });
-    });
+    // // Определяем позицию кнопки и "создаем" соответсвующий приказ
+    // document.querySelectorAll(".btn-choose-game").forEach((btn, i) => {
+    //     btn.addEventListener('click', () => {
+    //         console.log(`тутутт`);
+    //         console.log(`Вы выбрали игру номер: ${games[i]["row_id"]}`);
+    //         // console.log(`Вы выбрали игру номер: ${gamesList[i]}`);
+    //         console.log(`Вы выбрали игру номер: ${i+1}`);
+    //         setActiveGame(gamesList[i]["row_id"]); // Установить активную игру, ее данные будет отправлять бек при обновлении и загрузке новой страницы 
+    //     });
+    // });
 };
 
 requestStatusForNewGame();
@@ -122,7 +132,7 @@ function chooseNewGame(gamesList) {
                 <td>${item["row_id"]}</td>
                 <td>${item["year"]}</td>
                 <td>${item["turn"]}</td>
-                <td>${item["players"].length}</td>
+                <td>${item["cur_num_players"]}</td>
                 <td>${item["max_players"]}</td>
                 <td>${item["players"]}</td>
                 <td><button class="enter-new-game">Присоединиться</button></td>
@@ -161,23 +171,26 @@ async function addPlayerToGame(game_id){
 };
 
 // При выборе игры, эта игра становится активной для бекенда и сразу идет перенаправление на страничку игры, скачивается "активная" игра с бека
+async function setActiveGame(id){
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`http://localhost:8000/set_active_game?game_id=${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок
+                'Content-Type': 'application/json',
+            },
+        });
 
-function setActiveGame(id){
-    const req = new XMLHttpRequest();
-    req.open("GET", `/set_active_game?id=${id}`);
-    req.addEventListener('load', () => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
         console.log("Xmmm");
-        window.location.href = 'game';
-        // То что ниже в комментах оставим, интересно....
-        // Если ответ есть, запустить функцию отображения
-        // if (response) {
-            // writeComment(response, id);
-        // };
-    });
-    req.addEventListener('error', () => {
-        console.log('error')
-    });
-    req.send();
+        window.location.href = 'game.html';
+        
+    } catch (error) {
+        console.error('Ошибка при входе в игру:', error);
+    }
 };
 
 // Для создания новой игры
@@ -234,9 +247,39 @@ function createNewGame(post) {
     request.addEventListener('load', () => {
         // console.log(request.response)
         console.log("Запрос на создание новой настроенной игры");
-        console.log("Запрос на создание новой настроенной игры");
         // alert(request.response);
-        window.location.href = 'choose-game';
+        // window.location.href = 'choose-game';
+        location.reload();
     });
 
 };
+
+async function createNewGame(post) {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch('http://localhost:8000/create_new_game', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(post)
+        });
+
+        console.log(JSON.stringify(post));
+        
+        if (!response.ok) {
+            throw new Error('Сеть ответила с ошибкой: ' + response.status);
+        } else {           
+
+
+            console.log("Запрос на создание новой настроенной игры.");
+            let res = await response.json()
+            console.log(res);
+            location.reload();
+        }
+
+    } catch (error) {
+        console.error('Ошибка при создании игровой сессии:', error);
+    }
+}
