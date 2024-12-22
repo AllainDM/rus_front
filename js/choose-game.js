@@ -283,3 +283,82 @@ async function createNewGame(post) {
         console.error('Ошибка при создании игровой сессии:', error);
     }
 }
+
+
+// Модальное окно
+// Получение самого элемента вверху скрипта
+// // Получить модальное окно
+const modal = document.getElementById("my-modal");
+
+// // Получить кнопку, которая открывает модальное окно
+// const btnShowAllLogsParty = document.getElementById("show_all_logs_party");
+
+// // Получить элемент <span>, который закрывает модальное окно
+const span = document.getElementsByClassName("close")[0];
+
+// // Открыть модальное окно по нажатию
+// btnShowAllLogsParty.onclick = function() {
+//     modal.style.display = "block";
+//     let content = document.getElementById("show-content");
+//     content.innerHTML = ""
+//     console.log("Модалка открыта")
+//     statusGame.allLogsParty.forEach((item, id) => {
+//         console.log(item)
+//         content.innerHTML += `<div>${item}</div>`
+//     });
+//     content.innerHTML += `<button onclick = closeModal() style="font-size: 20px">Выйти</button>`
+// };
+
+// btnShowAllLogsPartyPlayers.onclick = function() {
+//     modal.style.display = "block";
+//     let content = document.getElementById("show-content");
+//     content.innerHTML = ""
+//     console.log("Модалка открыта")
+//     statusGame.logsTextAllTurns.forEach((item, id) => {
+//         console.log(item)
+//         content.innerHTML += `<div>${item}</div>`
+//     });
+//     content.innerHTML += `<button onclick = closeModal() style="font-size: 20px">Выйти</button>`
+// };
+
+// Когда пользователь нажимает на <span> (x), закройте модальное окно
+span.onclick = function() {
+  modal.style.display = "none";
+  exitToMainMenuButtons(); // На всякий случай выйдем в главное меню кнопок
+}
+
+// Общая функция закрытия модального окна
+function closeModal() {
+    modal.style.display = "none";   
+    // exitToMainMenuButtons(); // На всякий случай выйдем в главное меню кнопок
+}
+
+// Информационное модальное окошко
+function infoModal(text, text_size=20) {
+    modal.style.display = "block";
+    let content = document.getElementById("show-content");
+    content.innerHTML = `<div style="font-size: ${text_size}px">${text}</div>`
+    content.innerHTML += `<button onclick = closeModal() style="font-size: 25px">Хорошо</button>`
+
+}
+
+// Модальное окошко подтверждения
+// Не получается пока сдать универсальное
+function confimModal(text, fn) {
+    fn = postTurn
+    modal.style.display = "block";
+    let content = document.getElementById("show-content");
+    content.innerHTML = `<div style="font-size: 25px">${text}</div>`
+    content.innerHTML += `<button onclick = ${fn} style="font-size: 25px; width: 100px">Да</button>`
+    content.innerHTML += `<button onclick = closeModal() style="font-size: 25px; width: 100px">Нет</button>`
+
+}
+
+function confimRecTurnModal() {
+    modal.style.display = "block";
+    let content = document.getElementById("show-content");
+    content.innerHTML = `<div style="font-size: 25px">Новый ${statusGame.turn} ход</div>`;
+    content.innerHTML += `<button onclick = confirmRecTurn() style="font-size: 25px; width: 150px">Отлично</button>`;
+    // Сразу подвердим получени хода, чтобы окошко не выскакивало два раза
+    statusGame.endTurnKnow = true;
+}

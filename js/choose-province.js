@@ -74,10 +74,70 @@ async function setProvince(id) {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        console.log("Xmmm");
+        console.log("Xmmm111");
+        answer = await response.json()
+        console.log(answer);
+        infoModal(answer, 30, 'game.html')
         // window.location.href = 'game.html';
+
         
     } catch (error) {
         console.error('Ошибка при входе в игру:', error);
     }
 };
+
+
+// Модальное окно
+// Получить модальное окно
+const modal = document.getElementById("my-modal");
+
+// Получить элемент <span>, который закрывает модальное окно
+const span = document.getElementsByClassName("close")[0];
+
+// Когда пользователь нажимает на <span> (x), закройте модальное окно
+span.onclick = function() {
+  modal.style.display = "none";
+//   exitToMainMenuButtons(); // На всякий случай выйдем в главное меню кнопок
+}
+
+// Общая функция закрытия модального окна
+function closeModal() {
+    modal.style.display = "none";   
+    // exitToMainMenuButtons(); // На всякий случай выйдем в главное меню кнопок
+}
+
+// Информационное модальное окошко
+function infoModal(text, text_size=20, href="") {
+    modal.style.display = "block";
+    let content = document.getElementById("show-content");
+    content.innerHTML = `<div style="font-size: ${text_size}px">${text}</div>`
+
+    if (href != "") {
+        console.log("необходим переход 2")
+        content.innerHTML += `<button onclick = "handleButtonClick('${href}')" style="font-size: 25px">Хорошо</button>`
+       
+        // window.location.href = href;
+    } else {
+        content.innerHTML += `<button onclick = closeModal() style="font-size: 25px">Хорошо</button>`
+    }
+    // Опционально передаем адрес если нужен переход на другую страницу.
+
+}
+
+// Функция для обработки нажатия на кнопку для перехода на другую страницу
+function handleButtonClick(href) {
+    closeModal(); // Закрываем модальное окно
+    window.location.href = href;
+}
+
+// Модальное окошко подтверждения
+// Не получается пока сдать универсальное
+function confimModal(text, fn) {
+    fn = postTurn
+    modal.style.display = "block";
+    let content = document.getElementById("show-content");
+    content.innerHTML = `<div style="font-size: 25px">${text}</div>`
+    content.innerHTML += `<button onclick = ${fn} style="font-size: 25px; width: 100px">Да</button>`
+    content.innerHTML += `<button onclick = closeModal() style="font-size: 25px; width: 100px">Нет</button>`
+
+}
