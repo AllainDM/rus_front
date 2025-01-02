@@ -213,55 +213,68 @@ async function requestStatusPlayer() {
             console.log("Запрос на полученние данных об игроке.");
             let res = await response.json()
             console.log(res);
-            actualVarPlayer(res);
-            // location.reload();
-        }
-
-    } catch (error) {
-        console.error('Ошибка при создании игровой сессии:', error);
-    }
-}
-
-// Запрос к серверу на получение данных о провинциях
-// Делается так же перед загрузкой этой странички. 
-// Чтобы понять если ли у игрока территория с которой он играет.
-// Если такой территории нет, игрок будет сначала переотправлен на страницу с выбором провинции.
-async function requestStatusProvinces() {
-    const token = localStorage.getItem('token');
-    try {
-        const response = await fetch('http://localhost:8000/get_player_provinces', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок
-                'Content-Type': 'application/json',
-            },
-        });
-        
-        if (!response.ok) {
-            throw new Error('Сеть ответила с ошибкой: ' + response.status);
-        } else {           
-
-
-            console.log("Запрос на полученние данных об провинциях игрока.");
-            let res = await response.json()             
-            console.log(res);
 
             // Если у игрока нет провинций, переместим его на страницу выбора провинции.
-            if (res.length < 1) {
+            if (res[1].length < 1) {
                 // Сделать модальное окошко?
                 // Создается в окне выбора провинции?
                 infoModal("Необходимо выбрать страну.", 30, 'choose-province.html', text_ok="Хорошо", text_no="Мне и так норм") // Второй аргумент размер шрифта основного текста
                 // alert("У вас нет провинции")  // Тестовый алерт
                 // window.location.href = 'choose-province.html';
+            } else {
+
+                actualVarPlayer(res);
+                // location.reload();
             }
 
-            // location.reload();
         }
 
     } catch (error) {
         console.error('Ошибка при создании игровой сессии:', error);
     }
 }
+
+// !!!!!!!!! Передается с остальными данными игрока.
+// Запрос к серверу на получение данных о провинциях
+// Делается так же перед загрузкой этой странички. 
+// Чтобы понять если ли у игрока территория с которой он играет.
+// Если такой территории нет, игрок будет сначала переотправлен на страницу с выбором провинции.
+// async function requestStatusProvinces() {
+//     const token = localStorage.getItem('token');
+//     try {
+//         const response = await fetch('http://localhost:8000/get_player_provinces', {
+//             method: 'GET',
+//             headers: {
+//                 'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок
+//                 'Content-Type': 'application/json',
+//             },
+//         });
+        
+//         if (!response.ok) {
+//             throw new Error('Сеть ответила с ошибкой: ' + response.status);
+//         } else {           
+
+
+//             console.log("Запрос на полученние данных об провинциях игрока.");
+//             let res = await response.json()             
+//             console.log(res);
+
+//             // Если у игрока нет провинций, переместим его на страницу выбора провинции.
+//             if (res.length < 1) {
+//                 // Сделать модальное окошко?
+//                 // Создается в окне выбора провинции?
+//                 infoModal("Необходимо выбрать страну.", 30, 'choose-province.html', text_ok="Хорошо", text_no="Мне и так норм") // Второй аргумент размер шрифта основного текста
+//                 // alert("У вас нет провинции")  // Тестовый алерт
+//                 // window.location.href = 'choose-province.html';
+//             }
+
+//             // location.reload();
+//         }
+
+//     } catch (error) {
+//         console.error('Ошибка при создании игровой сессии:', error);
+//     }
+// }
 
 
 {/* <div id="player_name">Имя игрока</div>
@@ -289,22 +302,35 @@ function updateVar() {
     document.getElementById('winners').innerText = 'Победитель: ' + statusGame.winner_id; 
     document.getElementById('win-points').innerText = 'Победные очки: ' + statusDynasty.win_points; 
 
-    
+    // Вывод параметров в строку под меню
+    // Дата и номер хода
+    document.getElementById('year-turn').innerText = 'Дата: ' + statusGame.year + " Ход: " + statusGame.turn;
+    // Деньги
+    document.getElementById('player-gold').innerText = 'Богатство: ' + statusDynasty.gold; 
+    // Очки действий
+    document.getElementById('body-points').innerText = 'Очки действий: ' + statusDynasty.body_points; 
+    // Готовность хода
+    if (statusDynasty.end_turn) {
+        document.getElementById('end-turn-bool').innerText = "Ход ГОТОВ"
+    } else {
+        document.getElementById('end-turn-bool').innerText = "Ход НЕ готов"
+    }
+
 
 }
 
-// Функция обновления данных в statusDynasty
+// Функция записи данных в statusDynasty
 function actualVarPlayer(res) {
-    statusDynasty.dynasty_name = res.name
+    statusDynasty.dynasty_name = res[0].name
     // statusDynasty.player_name = res.player_name
-    statusDynasty.gold = res.gold
+    statusDynasty.gold = res[0].gold
     // statusDynasty.win_points = res.win_points
 
-    statusDynasty.body_points = res.body_points
-    statusDynasty.authority = res.authority
-    statusDynasty.title = res.title
+    statusDynasty.body_points = res[0].body_points
+    statusDynasty.authority = res[0].authority
+    statusDynasty.title = res[0].title
 
-    statusDynasty.acts = res.acts
+    statusDynasty.acts = res[0].acts
     // statusDynasty.result_logs_text = res.result_logs_text
     // statusDynasty.result_logs_text_all_turns = res.result_logs_text_all_turns
     // statusDynasty.end_turn = res.end_turn
@@ -314,13 +340,48 @@ function actualVarPlayer(res) {
     console.log('!!!!!!!! statusGameDictPlayer');
     console.log(statusDynasty);
 
+
+    // Новый вывод инфы сразу о всех наших локациях
+    // С бека мы получаем массив, нужен цикл для переноса инфы
+    statusSettlements = []
+    console.log("Вывод поселений.")
+    for (i=0; i<res[1].length; i++) {
+        statusSettlements.push(res[1][i])
+        // statusSettlementsNames[res[1][i]["name_eng"]] = res[1][i]
+        // statusSettlementsNamesRus[res[1][i]["name_rus"]] = res[1][i]
+        // statusSettlementsId[res[1][i]["row_id"]] = res[1][i]
+    }
+    console.log("statusSettlements");
+    console.log(statusSettlements);
+
+    let tab = document.getElementById('table-province');
+    tab.innerHTML = `            
+        <thead>    
+            <tr class="table">
+
+            </tr>
+        </thead>`
+    
+    res[1].forEach((item, num) => {
+        tab.insertAdjacentHTML("beforeend",
+            `
+            <tr>
+                    <td rowspan=2>
+                        ${item["name_rus"]} <br> 
+                        Благосостояние: ${item["wealth_status"]} <br>
+                        Отношение: ${relation} <br>
+                    </td>
+            `
+        )
+    });
+
     // Запрос для обвновления данных на страничке.
     // Выполним для каждой функции, ибо пока не решена проблема асинхронности.
     updateVar();
 
 }
 
-// Функция обновления данных в statusGame
+// Функция записи данных в statusGame
 function actualVarGame(res) {
     statusGame.game_id = res.row_id
 
@@ -349,7 +410,7 @@ function updateAll() {
 
     requestStatusPlayer();
     requestStatusGame();
-    requestStatusProvinces();
+    // requestStatusProvinces();  // Передается с остальными данными игрока.
     // Запрос для обвновления данных на страничке.
     // Выполним для каждой функции, ибо пока не решена проблема асинхронности.
     updateVar();
