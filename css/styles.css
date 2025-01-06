@@ -92,8 +92,50 @@ aside {
 }
   
 
+/* Таблицы с провинциями, юнитами и т.д. */
+
+.table {
+	width: 80%;
+	margin-bottom: 20px;
+	border: 1px solid #7f8686;
+	border-collapse: collapse; 
+}
+
+.table th {
+	/* font-weight: bold; */
+	padding: 5px;
+	background: #7f8686;
+
+	border: 1px solid #dddddd;
+  border-width: 1px;
+  border-color: white;
+
+  text-align: center;
+  font-size: 14px;
+}
+
+.table td {
+	border: 1px solid #dddddd;
+	background: #7f8686;
+	padding: 5px;
+}
+
+.table-province {
+    /* height: 20px; */
+    max-height: 35px;
+    font-size: 14px;
+}
+
+
+/* Для самой таблица с юнитами */
+.table-units {
+    /* height: 20px; */
+    /* max-height: 135px; */
+    font-size: 14px;
+}
+
 /* Кнопки */
-.button19 {
+.button_end_turn {
     height: 25px;
     display: inline-block;
     font-weight: bold;
@@ -113,10 +155,10 @@ aside {
      inset 0 0 3px rgba(255,255,255,.5);
     transition: .2s;
   } 
-  .button19:hover {
+  .button_end_turn:hover {
     background: rgb(167,91,41) linear-gradient(rgb(126,69,31), rgb(167,91,41) 80%);
   }
-  .button19:active {
+  .button_end_turn:active {
     background: rgb(120,63,25) linear-gradient(rgb(120,63,25) 20%, rgb(167,91,41));
     box-shadow:
      0 2px rgb(86,38,6),
@@ -126,6 +168,60 @@ aside {
     -webkit-transform: translate(0, 4px);
     transform: translate(0, 4px);
   }
+
+
+
+
+  /* Выпадающее меню  */
+  /* https://html5css.ru/howto/howto_js_dropdown.php */
+   /* Dropdown Button */
+.dropbtn {
+  background-color: #555758;
+  color: white;
+  padding: 6px;
+  font-size: 10px;
+  /* border: none; */
+  cursor: pointer;
+}
+
+/* Dropdown button on hover & focus */
+.dropbtn:hover, .dropbtn:focus {
+  background-color: #2980B9;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  cursor: pointer;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #ddd}
+
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {display:block;} 
+
+
+
 
 /* Модальное окно */
 .modal {

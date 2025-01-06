@@ -104,7 +104,7 @@ document.getElementById('settlement-button').addEventListener('click', () => {
     document.getElementById("settlement-window").setAttribute('style','visibility:visible');
     document.getElementById("settlement-button").setAttribute('style','color:red; cursor: pointer;');
     // Откроем меню провинций
-    document.getElementById("table-province").setAttribute('style', 'visibility: visible');
+    document.getElementById("table-user-province").setAttribute('style', 'visibility: visible');
     localStorage.setItem('last-opened-tab', 'settlement-button');
 });
 // Торговля
@@ -340,13 +340,29 @@ function actualVarPlayer(res) {
     console.log('!!!!!!!! statusGameDictPlayer');
     console.log(statusDynasty);
 
+    // Выывод провинций игрока.
+    // let tab = document.getElementById('table-user-province');
+    // Передадим ид таблицы вторым аргументом.
+    tabName = 'table-user-province'
+    // Передадим список провинций первым аргументов.
+    showProvs(res[1], tabName)
+    // <td rowspan="2">
 
-    // Новый вывод инфы сразу о всех наших локациях
+    // Запрос для обвновления данных на страничке.
+    // Выполним для каждой функции, ибо пока не решена проблема асинхронности.
+    updateVar();
+
+}
+
+// Общая функция вывода провинций. Запускается отдельно для провиций игрока и для всех остальных
+
+function showProvs(provs, tabName) {
+
     // С бека мы получаем массив, нужен цикл для переноса инфы
     statusSettlements = []
     console.log("Вывод поселений.")
-    for (i=0; i<res[1].length; i++) {
-        statusSettlements.push(res[1][i])
+    for (i=0; i<provs.length; i++) {
+        statusSettlements.push(provs[i])
         // statusSettlementsNames[res[1][i]["name_eng"]] = res[1][i]
         // statusSettlementsNamesRus[res[1][i]["name_rus"]] = res[1][i]
         // statusSettlementsId[res[1][i]["row_id"]] = res[1][i]
@@ -354,32 +370,112 @@ function actualVarPlayer(res) {
     console.log("statusSettlements");
     console.log(statusSettlements);
 
-    let tab = document.getElementById('table-province');
+    // ид элемента берем из аргумента.
+    let tab = document.getElementById(tabName);
     tab.innerHTML = `            
         <thead>    
-            <tr class="table">
+            <tr class="table table-province">
 
             </tr>
         </thead>`
     
-    res[1].forEach((item, num) => {
+    provs.forEach((item, num) => {
         tab.insertAdjacentHTML("beforeend",
             `
-            <tr>
-                    <td rowspan=2>
-                        ${item["name_rus"]} <br> 
-                        Благосостояние: ${item["wealth_status"]} <br>
-                        Отношение: ${relation} <br>
-                    </td>
+            <tr>                    
+                <td>
+                    Название: ${item["province_name"]}<br>
+                    Население: ${item["population"]}<br>
+                    Развитие: ${item["develop"]}<br>
+                </td>
+
+                <td>
+                    Ландшафт: ${item["landscape"]}<br>
+                    Река: ${item["to_river"]}<br>
+                    Берег: ${item["to_sea"]}<br>
+
+                </td>
+
+                <td>
+                    Статус: ${item["status"]}<br>
+                    Крепость: ${item["fort"]}<br>
+
+                </td>
+
+                <td id='th-action'>
+                    <div class="dropdown">
+
+                        <button id="btn-act-${item["row_id"]}" class="dropbtn">Действия</button>
+
+                        <div id="dropdownProv${item["row_id"]}" class="dropdown-content">
+                            <a id="btn-act-build${item["row_id"]}">Строительство</a>
+                            <a id="btn-act-decision${item["row_id"]}">Решения</a>
+                        </div>
+
+                    </div> 
+                </td>
+            
+            </tr>
             `
-        )
+        );
+        tab.insertAdjacentHTML("beforeend", 
+            `<td colspan="4" style="height: 1px;"></td>`
+        );
+
+        document.getElementById(`btn-act-${item["row_id"]}`).addEventListener(('click'), () => {
+            console.log(`Нажата кнопка выбора действия в провинции с ид: ${item["row_id"]}`);
+            dropdownProvince(item["row_id"])
+        });
+
+        // <a id="btn-act-war${item["row_id"]}">Атаковать</a>
+        // document.getElementById(`btn-act-war${item["row_id"]}`).addEventListener(('click'), () => {
+        //     console.log(`Нажата кнопка нападения на провинцию с ид: ${item["row_id"]}`);
+        //     // Аргументы: ид целевого поселения, инфа об нашей армии
+        //     console.log(`item["row_id"]: ${item["row_id"]}`)
+        //     console.log(`res[3]: ${res[3]}`)
+        //     // res[3] передаем всю армию, ид бек сам выберет. 
+        //     // attack(item["row_id"], res[3]);
+        // });
+        document.getElementById(`btn-act-build${item["row_id"]}`).addEventListener(('click'), () => {
+            console.log(`Нажата кнопка строительства в провинции с ид: ${item["row_id"]}`);
+            console.log(`Что хранится в item: ${item}`);
+
+            // menuNewBuilding(item);
+        }); 
+        document.getElementById(`btn-act-decision${item["row_id"]}`).addEventListener(('click'), () => {
+            console.log(`Нажата кнопка решений в провинции с ид: ${item["row_id"]}`);
+            console.log(`Что хранится в item: ${item}`);
+
+            // startModalDonation(item);
+        });               
     });
-
-    // Запрос для обвновления данных на страничке.
-    // Выполним для каждой функции, ибо пока не решена проблема асинхронности.
-    updateVar();
-
+       
 }
+
+
+
+
+// // Открыващее меню для действий с поселениями/провинциями.
+/* When the user clicks on the button,
+toggle between hiding and showing the dropdown content */
+function dropdownProvince(id_prov) {
+    document.getElementById(`dropdownProv${id_prov}`).classList.toggle("show");
+}
+
+// Close the dropdown menu if the user clicks outside of it
+window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+  
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  } 
 
 // Функция записи данных в statusGame
 function actualVarGame(res) {
@@ -421,6 +517,31 @@ updateAll()
 
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
+
+
+///////////////////////////////////////////////
+// Основные действия по кнопкам
+///////////////////////////////////////////////
+
+// Война
+
+function attack(settl_id, army) {  // 404
+    console.log("Запуск функции нападения.");
+    console.log("Модалку временно не рисуем.");
+    // console.log(settl_id);
+    // console.log(army);
+    statusDynasty.acts.push([`Атакуем: ${settl_id} (Вывести имена поселений)`, 
+    404, settl_id, army]) 
+    // postAct(statusGame.game_id);
+    // logStart();
+    // closeModal();
+}
+
+
+///////////////////////////////////////////////
+///////////////////////////////////////////////
+
+
 
 
 ///////////////////////////////////////////////

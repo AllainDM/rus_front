@@ -19,7 +19,7 @@
                 <div id="player-gold" class="two-block" style="color: black; margin-left: 25px;">Богатство: ?</div>
                 <div id="body-points" class="two-block" style="margin-left: 30px;">Очки действий: ?</div>
                 <div id="end-turn-bool" class="two-block" style="margin-left: 30px;">Завершен ли ход</div>
-                <button id="end-turn-btn" class="button19" style="margin-left: 15px;">Подтвердить ход</button>
+                <button id="end-turn-btn" class="button_end_turn" style="margin-left: 15px;">Подтвердить ход</button>
 
             </div>
     </header>
@@ -28,7 +28,7 @@
             <ul class="" style="color: black; outline: 2px solid #000; border: 3px solid #fff;">
                 <li id="party-button" style="cursor: pointer; color: black;">О партии</li>
                 <li id="dynasty-button" style="cursor: pointer; color: black;">Династия</li>
-                <li id="settlement-button" style="cursor: pointer; color: black;">Поселение</li>
+                <li id="settlement-button" style="cursor: pointer; color: black;">Поселения</li>
                 <li id="trade-button" style="cursor: pointer; color: black;">Торговля</li>
                 <li id="map-button" style="cursor: pointer; color: black;">Карта</li>
                 <li id="army-button" style="cursor: pointer; color: black;">Армия</li>
@@ -84,7 +84,7 @@
             <!-- Тут только наши провинции -->
             <div class="container" id="settlement-window" > 
                 <div  style="margin-top: 25px;">
-                    <table class="table" id="table-province">  
+                    <table class="table table-province" id="table-user-province">  
                     
                     </table>
 
@@ -101,6 +101,14 @@
                 <div id="map">
                     <!-- <img src="/image.jpg" alt="Картинка" width="300" height="200"> -->
                     <img src="/image/map/Чистая.png" alt="Картинка">
+
+                </div>
+
+                <!-- Тут все НЕ наши провинции -->
+                <div  style="margin-top: 25px;">
+                    <table class="table table-province" id="table-all-province">  
+                    
+                    </table>
 
                 </div>
             </div>                
