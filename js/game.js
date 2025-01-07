@@ -94,8 +94,7 @@ document.getElementById('party-button').addEventListener('click', () => {
     hiddenAllWindows();
     document.getElementById("party-window").setAttribute('style','visibility:visible;');
     document.getElementById("party-button").setAttribute('style','color:red; cursor: pointer;');
-    // Откроем меню провинций
-    document.getElementById("table-province").setAttribute('style', 'visibility: visible');
+
     localStorage.setItem('last-opened-tab', 'party-button');
 });
 // Поселение
@@ -105,6 +104,7 @@ document.getElementById('settlement-button').addEventListener('click', () => {
     document.getElementById("settlement-button").setAttribute('style','color:red; cursor: pointer;');
     // Откроем меню провинций
     document.getElementById("table-user-province").setAttribute('style', 'visibility: visible');
+
     localStorage.setItem('last-opened-tab', 'settlement-button');
 });
 // Торговля
@@ -112,8 +112,7 @@ document.getElementById('trade-button').addEventListener('click', () => {
     hiddenAllWindows();
     document.getElementById("trade-window").setAttribute('style','visibility:visible');
     document.getElementById("trade-button").setAttribute('style','color:red; cursor: pointer;');
-    // Откроем меню провинций
-    document.getElementById("table-province").setAttribute('style', 'visibility: visible');
+
     localStorage.setItem('last-opened-tab', 'trade-button');
 });
 // Карта
@@ -122,7 +121,8 @@ document.getElementById('map-button').addEventListener('click', () => {
     document.getElementById("map-window").setAttribute('style','visibility:visible');
     document.getElementById("map-button").setAttribute('style','color:red; cursor: pointer;');
     // Откроем меню провинций
-    document.getElementById("table-province").setAttribute('style', 'visibility: visible');
+    document.getElementById("table-all-province").setAttribute('style', 'visibility: visible');
+
     localStorage.setItem('last-opened-tab', 'map-button');
 });
 // Династия
@@ -130,8 +130,7 @@ document.getElementById('dynasty-button').addEventListener('click', () => {
     hiddenAllWindows();
     document.getElementById("dynasty-window").setAttribute('style','visibility:visible');
     document.getElementById("dynasty-button").setAttribute('style','color:red; cursor: pointer;');
-    // Откроем меню провинций
-    document.getElementById("table-province").setAttribute('style', 'visibility: visible');
+
     localStorage.setItem('last-opened-tab', 'dynasty-button');
 });
 // Армия
@@ -141,6 +140,7 @@ document.getElementById('army-button').addEventListener('click', () => {
     document.getElementById("army-button").setAttribute('style','color:red; cursor: pointer;');
     // Дополнительно скроем меню провинций
     document.getElementById("table-province").setAttribute('style', 'display: none');
+
     localStorage.setItem('last-opened-tab', 'army-button');
 });
 // Игроки
@@ -150,6 +150,7 @@ document.getElementById('players-button').addEventListener('click', () => {
     document.getElementById("players-button").setAttribute('style','color:red; cursor: pointer;');
     // Откроем меню провинций
     document.getElementById("table-province").setAttribute('style', 'visibility: visible');
+
     localStorage.setItem('last-opened-tab', 'players-button');
 });
 ///////////////////////////////////////////////////
@@ -316,7 +317,6 @@ function updateVar() {
         document.getElementById('end-turn-bool').innerText = "Ход НЕ готов"
     }
 
-
 }
 
 // Функция записи данных в statusDynasty
@@ -479,24 +479,32 @@ window.onclick = function(event) {
 
 // Функция записи данных в statusGame
 function actualVarGame(res) {
-    statusGame.game_id = res.row_id
+    statusGame.game_id = res[0].row_id
 
-    statusGame.year = res.year
-    statusGame.turn = res.turn
+    statusGame.year = res[0].year
+    statusGame.turn = res[0].turn
 
-    statusGame.cur_num_players = res.cur_num_players
-    statusGame.max_players = res.max_players
+    statusGame.cur_num_players = res[0].cur_num_players
+    statusGame.max_players = res[0].max_players
 
-    statusGame.winners = res.winner_id
+    statusGame.winners = res[0].winner_id
     // statusGame.win_points_to_win = res.win_points_to_win
 
-    statusGame.is_active = res.is_active
-    statusGame.the_end = res.the_end
+    statusGame.is_active = res[0].is_active
+    statusGame.the_end = res[0].the_end
 
-    statusGame.date_create = res.date_create
+    statusGame.date_create = res[0].date_create
 
     console.log('!!!!!!!! statusGameDictGame');
     console.log(statusGame);
+
+
+    // Выывод провинций игрока.
+    // let tab = document.getElementById('table-user-province');
+    // Передадим ид таблицы вторым аргументом.
+    tabName = 'table-all-province'
+    // Передадим список провинций первым аргументов.
+    showProvs(res[1], tabName)
 
     // Запрос для обвновления данных на страничке.
     updateVar();
