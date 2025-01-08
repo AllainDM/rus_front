@@ -48,7 +48,8 @@ ul.mainmenu li a:hover {
 	color: white;
 }
 .container {
-	width: 1024px;
+  width: 1024px;
+  display: flex; /* Используем flex-контейнер */
 }
 
 /* Стандартные серые окошки */
@@ -76,8 +77,15 @@ ul.mainmenu li a:hover {
 
 aside {
     float: left;
-    width: 200px;
+    /* width: 250px; */
+    padding: 5px;
 }
+
+.sidebar {
+  width: 200px; 
+  /* background-color: #f0f0f0; Цвет фона боковой панели */
+  /* padding: 15px; Интервал внутри боковой панели */
+} 
 
 /* Полоска с параметрами игрока + кнопка хода. */
 /* Два блока в одну линию */
@@ -89,6 +97,13 @@ aside {
     /* display: inline-block; */
     /* border: 1px solid blue; */
     margin: 2px;
+}
+
+/* Основной окно отделим от бокового. */
+.main-content {
+  flex-grow: 1; /* Основной контент занимает оставшееся пространство */
+  padding: 6px; /* Интервал внутри основного контента */
+  /* background-color: #ffffff; Цвет фона основного контента */
 }
   
 
@@ -126,12 +141,29 @@ aside {
     font-size: 14px;
 }
 
-
-/* Для самой таблица с юнитами */
-.table-units {
+/* Для таблицы с юнитами */
+#army-window {
+	  /* width: 80%; */
     /* height: 20px; */
     /* max-height: 135px; */
     font-size: 14px;
+}
+
+/* Для отдельных строчек с юнитами */
+.units {
+  /* height: 20px; */
+  /* max-height: 35px; */
+  font-size: 14px;
+}
+
+.rotate-text {
+  transform-origin: top-right;
+  transform: rotate(-90deg);
+}
+
+.rotate-sm-90 {
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
 }
 
 /* Кнопки */

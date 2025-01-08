@@ -23,122 +23,142 @@
 
             </div>
     </header>
-    <aside>
-        <div style="margin-top: -22px;">
-            <ul class="" style="color: black; outline: 2px solid #000; border: 3px solid #fff;">
-                <li id="party-button" style="cursor: pointer; color: black;">О партии</li>
-                <li id="dynasty-button" style="cursor: pointer; color: black;">Династия</li>
-                <li id="settlement-button" style="cursor: pointer; color: black;">Поселения</li>
-                <li id="trade-button" style="cursor: pointer; color: black;">Торговля</li>
-                <li id="map-button" style="cursor: pointer; color: black;">Карта</li>
-                <li id="army-button" style="cursor: pointer; color: black;">Армия</li>
-                <li id="players-button" style="cursor: pointer; color: black;">Игроки</li>
-            </ul>
-        </div>
-        <div class="players-stat" style="font-size: 16px;">
-            
-        </div>
-    
-            
-        <div class="container-act-logs">
-            <div class="logs"> 
-                <div id="logs"></div>
-                <p></p>
-                <button style="font-size: 12px; margin-top: 5px;" id="cancel-act">Отменить последний приказ</button>
-                <button style="font-size: 12px; margin-top: 5px;" id="cancel-all-acts">Отменить все приказы</button>
-            </div>
-        </div>
-    </aside>
-
-
-<section> 
-    <!-- Основные меню, те, что переключаются слева -->
     <div class="container">
-
-        <div class="stats">                
-            <div class="container" id="party-window">
-                <div id="player_name">Имя игрока:</div>
-                <div id="game-id">Номер игры:</div>
-                <div id="game-date">Дата создания:</div>
-                <div id="cur-num-players">Игроков:</div>
-                <div id="max-players">Макс. игроков:</div>
-                <div id="victory-conditions">Условия победы: Набрать 666 очков</div>
-                <div id="winners">Победитель(и): не определен</div>
-                <div id="win-points">Победные очки:</div> 
+        <aside>
+            <div class="sidebar" style="margin-top: -22px;">
+                <ul class="" style="color: black; outline: 2px solid #000; border: 1px solid #fff;">
+                    <li id="party-button" style="cursor: pointer; color: black;">О партии</li>
+                    <li id="dynasty-button" style="cursor: pointer; color: black;">Династия</li>
+                    <li id="settlement-button" style="cursor: pointer; color: black;">Поселения</li>
+                    <li id="trade-button" style="cursor: pointer; color: black;">Торговля</li>
+                    <li id="map-button" style="cursor: pointer; color: black;">Карта</li>
+                    <li id="army-button" style="cursor: pointer; color: black;">Армия</li>
+                    <li id="players-button" style="cursor: pointer; color: black;">Игроки</li>
+                </ul>
+            </div>
+            <div class="players-stat" style="font-size: 16px;">
                 
-                <div class="container-local-logs">
-                    <div class="logs"> 
-                        <button style="font-size: 14px;" id="show_all_logs_party_players">Посмотреть логи всех ваших ходов</button>
-                        <div id="logs-result"></div>
-                    </div>
-                </div>
-                <div class="container-all-logs">
-                    <div class="logs"> 
-                        <button style="font-size: 14px;" id="show_all_logs_party">Посмотреть логи всех ходов</button>
-                        <div id="all-logs-result"></div>
-                    </div>
-                </div>
-            </div> 
-
-            <!-- Окошко о поселении -->
-            <!-- Тут только наши провинции -->
-            <div class="container" id="settlement-window" > 
-                <div  style="margin-top: 25px;">
-                    <table class="table table-province" id="table-user-province">  
-                    
-                    </table>
-
-                </div>
-            </div>                      
-            
-            <!-- Окошко торговли -->          
-            <div class="container" id="trade-window"> 
+            </div>
         
-            </div>     
-
-            <!-- Окошко карты -->          
-            <div class="container" id="map-window">
-                <div id="map">
-                    <!-- <img src="/image.jpg" alt="Картинка" width="300" height="200"> -->
-                    <img src="/image/map/Чистая.png" alt="Картинка">
-
+                
+            <div class="container-act-logs">
+                <div class="logs"> 
+                    <div id="logs"></div>
+                    <p></p>
+                    <button style="font-size: 12px; margin-top: 5px;" id="cancel-act">Отменить последний приказ</button>
+                    <button style="font-size: 12px; margin-top: 5px;" id="cancel-all-acts">Отменить все приказы</button>
                 </div>
+            </div>
+        </aside>
 
-                <!-- Тут все НЕ наши провинции -->
-                <div  style="margin-top: 25px;">
-                    <table class="table table-province" id="table-all-province">  
-                    
-                    </table>
-
-                </div>
-            </div>                
-            
-            <!-- Окошко игрока -->
-            <div class="container" id="dynasty-window">  
-                <div id="body_points">Очки действия:</div> 
-                <div id="dynasty_name">Династия:</div> 
-                <div id="gold">Казна: </div>             
-                <div id="title">Титул: 0</div>    
-            </div>    
-            
-            <!-- Окошко армии -->        
-            <div class="container" id="army-window">
-            </div> 
-            
-            <!-- Окошко с остальными игроками -->      
-            <div class="container" id="players-window">        
-            </div>            
-        </div>
-
-        <!-- <div class="menu-block all-menu-buttons" >
-            
-        </div> -->
-    </div>
-    <div class="container-logs">
+        <section> 
+            <!-- Основные меню, те, что переключаются слева -->
+            <div class="container main-content">
         
+                <div class="stats">                
+                    <div class="container" id="party-window">
+                        <div id="player_name">Имя игрока:</div>
+                        <div id="game-id">Номер игры:</div>
+                        <div id="game-date">Дата создания:</div>
+                        <div id="cur-num-players">Игроков:</div>
+                        <div id="max-players">Макс. игроков:</div>
+                        <div id="victory-conditions">Условия победы: Набрать 666 очков</div>
+                        <div id="winners">Победитель(и): не определен</div>
+                        <div id="win-points">Победные очки:</div> 
+                        
+                        <div class="container-local-logs">
+                            <div class="logs"> 
+                                <button style="font-size: 14px;" id="show_all_logs_party_players">Посмотреть логи всех ваших ходов</button>
+                                <div id="logs-result"></div>
+                            </div>
+                        </div>
+                        <div class="container-all-logs">
+                            <div class="logs"> 
+                                <button style="font-size: 14px;" id="show_all_logs_party">Посмотреть логи всех ходов</button>
+                                <div id="all-logs-result"></div>
+                            </div>
+                        </div>
+                    </div> 
+        
+                    <!-- Окошко о поселении -->
+                    <!-- Тут только наши провинции -->
+                    <div class="container" id="settlement-window" > 
+                        <div  style="margin-top: 25px;">
+                            <table class="table table-province" id="table-user-province">  
+                            
+                            </table>
+        
+                        </div>
+                    </div>                      
+                    
+                    <!-- Окошко торговли -->          
+                    <div class="container" id="trade-window"> 
+                
+                    </div>     
+        
+                    <!-- Окошко карты -->          
+                    <div class="container" id="map-window">
+                        <div id="map">
+                            <!-- <img src="/image.jpg" alt="Картинка" width="300" height="200"> -->
+                            <img src="/image/map/Чистая.png" alt="Картинка">
+        
+                        </div>
+        
+                        <!-- Тут все НЕ наши провинции -->
+                        <div  style="margin-top: 25px;">
+                            <table class="table table-province" id="table-all-province">  
+                            
+                            </table>
+        
+                        </div>
+                    </div>                
+                    
+                    <!-- Окошко игрока -->
+                    <div class="container" id="dynasty-window">  
+                        <div id="body_points">Очки действия:</div> 
+                        <div id="dynasty_name">Династия:</div> 
+                        <div id="gold">Казна: </div>             
+                        <div id="title">Титул: 0</div>    
+                    </div>    
+                    
+                    <!-- Окошко армии -->        
+                    <div class="container" id="army-window">
+                        <div id="units-window">
+                            <table class="table" id="table-units">  
+                                
+                            </table>
+                            <div style="background-color: gray; margin-bottom: 30px;">
+                                <span>Выберите действие с отрядом: </span>
+                                <select name="unit-select-action" id="unit-select-action" size="1" style="font-size: 17px; background-color: rgb(175, 170, 170);">
+                                    
+                                    <!-- <option value="none" selected="selected">   </option> -->
+                                    <!-- <option value="dismiss">Распустить</option> -->
+                                    <option value="create-army">Сформировать армию</option>
+                                    <option value="train">Тренировать</option>
+                                </select>
+                                <button id="apply-changes-units">Подтвердить</button>
+                            </div>                
+                        </div>
+        
+                    </div> 
+                    
+                    <!-- Окошко с остальными игроками -->      
+                    <div class="container" id="players-window">        
+                    </div>            
+                </div>
+        
+                <!-- <div class="menu-block all-menu-buttons" >
+                    
+                </div> -->
+            </div>
+            <div class="container-logs">
+                
+            </div>
+        
+            </section>
+
     </div>
 
-</section>
 
     <!-- Модалка -->
     <div id="my-modal" class="modal">
