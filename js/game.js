@@ -46,7 +46,7 @@ let statusDynasty = {
 
 // Параметры партии
 let statusGame = {
-    game_id: "",        // ИД партии. Будем передавать вместе с ходом?
+    game_id: "",        // ИД партии. Будем передавать вместе с ходом? !!! Обязательно!!!
 
     // Параметры ходы
     year: 800,
@@ -176,6 +176,7 @@ document.getElementById('players-button').addEventListener('click', () => {
 // Запрос к серверу на получение данных об партии
 async function requestStatusGame() {
     const token = localStorage.getItem('token');
+    // Отключаем отловку ошибок, ибо при разработке не видно в чем проблема.
     // try {
         const response = await fetch('http://localhost:8000/req_status_game', {
             method: 'GET',
@@ -712,24 +713,82 @@ function attack(settl_id, army) {  // 404
 ///////////////////////////////////////////////////
 
 
+///////////////////////////////////////////////////
+// Отправка действий на сервер.
+///////////////////////////////////////////////////
+// Событие на кнопку отправки хода.
+// Функция отправки(подтверждения) хода.
 
+///////////////////////////////////////////////////
+
+// Событие на кнопку отправки хода.
+// Отправка хода с модалкой.
+document.getElementById('end-turn-btn').addEventListener('click', () => {
+    if (statusDynasty.acts.length < statusDynasty.body_points) {
+        // confimModalEndTurd("У вас еще остались очки действий. Точно отправить ход?")
+        modal.style.display = "block";
+        let content = document.getElementById("show-content");
+        content.innerHTML = `<div style="font-size: 25px">У вас еще остались очки действий. Точно отправить ход?</div>`
+        content.innerHTML += `<button onclick = "postTurn(statusGame.game_id); closeModal();" style="font-size: 25px; width: 100px">Да</button>`
+        content.innerHTML += `<button onclick = closeModal() style="font-size: 25px; width: 100px">Нет</button>`
+    } else {
+        postTurn(statusGame.game_id);
+    }
+    // postTurn(statusGame.game_id); // Передадим ИД партии аргументом, он сразу уйдет на Бек для определения к какой партии присвоить ход
+})
+
+// Функция отправки(подтверждения) хода.
+
+// Отключаем отловку ошибок, ибо при разработке не видно в чем проблема.
+async function postTurn() {
+
+    const token = localStorage.getItem('token');
+        try {             
+            const response = await fetch(`http://localhost:8000/post_turn?game_id=${statusGame.game_id}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(statusDynasty.acts) // Все действия отправляются по отдельности
+            });
+            
+            if (!response.ok) {
+                throw new Error('Сеть ответила с ошибкой: ' + response.status);
+            } else {
+                console.log("Запрос на отправку хода.");
+                // Что тут возвращается с сервера?
+                // let res = await response.json()
+                // console.log(res);
+                // actualVarGame(res);
+                // location.reload();
+            }
+
+        } catch (error) {
+            console.error('Ошибка при создании игровой сессии:', error);
+        }
+
+};
+
+///////////////////////////////////////////////////
+///////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////
 // Модальные окна.
 ///////////////////////////////////////////////////
 
-// Модальное окно
-// Получение самого элемента вверху скрипта
-// // Получить модальное окно
+// Модальное окно.
+// Получение самого элемента вверху скрипта.
+// // Получить модальное окно.
 const modal = document.getElementById("my-modal");
 
-// // Получить кнопку, которая открывает модальное окно
+// // Получить кнопку, которая открывает модальное окно.
 // const btnShowAllLogsParty = document.getElementById("show_all_logs_party");
 
-// // Получить элемент <span>, который закрывает модальное окно
+// // Получить элемент <span>, который закрывает модальное окно.
 const span = document.getElementsByClassName("close")[0];
 
-// Открыть модальное окно по нажатию
+// Открыть модальное окно по нажатию.
 // btnShowAllLogsParty.onclick = function() {
 //     modal.style.display = "block";
 //     let content = document.getElementById("show-content");

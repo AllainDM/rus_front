@@ -110,7 +110,7 @@ aside {
 /* Таблицы с провинциями, юнитами и т.д. */
 
 .table {
-	width: 80%;
+	/* width: 80%; */
 	margin-bottom: 20px;
 	border: 1px solid #7f8686;
 	border-collapse: collapse; 
