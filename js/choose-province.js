@@ -53,9 +53,9 @@ function chooseProvinces(provincesList) {
     buttons.forEach((btn, i) => {
             btn.addEventListener('click', () => {
                 console.log(`тутутт`);
-                console.log(`Вы выбрали провинцию номер: ${provincesList[i]["id"]}`);
+                console.log(`Вы выбрали провинцию номер: ${provincesList[i]["row_id"]}`);
                 // Тут апи выбора провинции.
-                setProvince(provincesList[i]["id"]); // 
+                setProvince(provincesList[i]["row_id"]); // 
             });
         });
 }

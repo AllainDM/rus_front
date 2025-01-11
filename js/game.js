@@ -23,7 +23,7 @@ console.log('Стрипт странички игры успешно загру�
 
 // Параметры игрока
 let statusDynasty = {
-    dynasty_name: "",               // Название династии.
+    dynasty_name: "нет",               // Название династии.
     player_name: "",
     gold: 0,                        // Казна игрока.
     win_points: 0,                  // Победные очки.
@@ -36,7 +36,7 @@ let statusDynasty = {
     result_logs_text: [],           // Логи за последний ход.
     result_logs_text_all_turns: [], // Логи за все ходы.
     end_turn: false,                // Подтверждение готовности хода.
-    end_turn_know: true,            // Оповещение о новом ходе.
+    end_turn_know: false,            // Оповещение о новом ходе.
 
     army: {},
     group_units: {},
@@ -70,6 +70,28 @@ let statusGame = {
 
 /////////////////////////////////////////////
 /////////////////////////////////////////////
+
+
+/////////////////////////////////////////////
+// Получение модалки, 
+// требуется заранее обьявить переменную modal.
+/////////////////////////////////////////////
+
+// Модальное окно.
+// Получение самого элемента вверху скрипта.
+// // Получить модальное окно.
+const modal = document.getElementById("my-modal");
+
+// // Получить кнопку, которая открывает модальное окно.
+// const btnShowAllLogsParty = document.getElementById("show_all_logs_party");
+
+// // Получить элемент <span>, который закрывает модальное окно.
+const span = document.getElementsByClassName("close")[0];
+
+/////////////////////////////////////////////
+/////////////////////////////////////////////
+
+
 
 /////////////////////////////////////////////
 // Обработка вкладок
@@ -337,12 +359,13 @@ function updateVar() {
         document.getElementById('end-turn-bool').innerText = "Ход НЕ готов"
     }
 
+
 }
 
 // Функция записи данных в statusDynasty, после получения данных с сервера.
 function actualVarPlayer(res) {
-    console.log('!!!!!!!! statusDynasty');
-    console.log(statusDynasty);
+    // console.log('!!!!!!!! statusDynasty');
+    // console.log(statusDynasty);
     console.log('!!!!!!!! res');
     console.log(res);
 
@@ -355,7 +378,7 @@ function actualVarPlayer(res) {
     // [2][2] - данных о юнитах, хз что тут
 
     // Запись основных параметров игрока.
-    statusDynasty.dynasty_name = res[0].name
+    statusDynasty.dynasty_name = res[0].dynasty_name
     // statusDynasty.player_name = res.player_name
     statusDynasty.gold = res[0].gold
     // statusDynasty.win_points = res.win_points
@@ -366,10 +389,11 @@ function actualVarPlayer(res) {
 
     statusDynasty.acts = res[0].acts
 
-    // statusDynasty.result_logs_text = res.result_logs_text
-    // statusDynasty.result_logs_text_all_turns = res.result_logs_text_all_turns
-    // statusDynasty.end_turn = res.end_turn
-    // statusDynasty.end_turn_know = res.end_turn_know
+    // statusDynasty.result_logs_text = res[0].result_logs_text
+    // statusDynasty.result_logs_text_all_turns = res[0].result_logs_text_all_turns
+
+    statusDynasty.end_turn = res[0].end_turn
+    statusDynasty.end_turn_know = res[0].end_turn_know
 
     // Вывод провинций игрока.
     // Передадим ид таблицы вторым аргументом.
@@ -383,10 +407,19 @@ function actualVarPlayer(res) {
     showUnits(res[2][1]); 
     
 
-
     // Запрос для обвновления данных на страничке.
     // Выполним для каждой функции, ибо пока не решена проблема асинхронности.
     updateVar();
+
+    // Окошко информирования о новом ходе.
+    console.log(`statusDynasty.end_turn_know1 ${statusDynasty.end_turn_know}`)
+
+    if (statusDynasty.end_turn_know == 0) {
+        console.log(`Ход не получен.`);
+        confimRecTurnModal();
+    } else {
+        console.log(`Ход получен.`);
+    };
 
 }
 
@@ -654,7 +687,6 @@ function showUnits(group_units) {
 
 }
 
-
 // Открыващее меню для действий с поселениями/провинциями.
 /* When the user clicks on the button,
 toggle between hiding and showing the dropdown content */
@@ -770,23 +802,58 @@ async function postTurn() {
 
 };
 
+// Подтвердить получение хода, чтобы не вылазило оповещение
+async function confirmRecTurn() { 
+    const token = localStorage.getItem('token');
+    closeModal(); // Закроем модальное окошко
+
+    try {             
+        const response = await fetch(`http://localhost:8000/confirm_rec_turn?game_id=${statusGame.game_id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок
+                'Content-Type': 'application/json',
+            },
+        });
+        
+        if (!response.ok) {
+            throw new Error('Сеть ответила с ошибкой: ' + response.status);
+        } else {
+            console.log("Запрос на подтверждение получения хода.");
+            // Что тут возвращается с сервера?
+            // let res = await response.json()
+            // console.log(res);
+            // actualVarGame(res);
+            // location.reload();
+        }
+
+    } catch (error) {
+        console.error('Ошибка при создании игровой сессии:', error);
+    }
+
+    // const request = new XMLHttpRequest();
+    // request.open('GET', `/confirm_rec_turn?gameID=${statusGame.game_id}`);
+    // request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+    
+    // console.log(JSON.stringify(statusGame.acts));
+    // // Это можно удалить???
+    // request.send(JSON.stringify(statusGame.acts));
+
+    // request.addEventListener('load', () => {
+    //     console.log("Автообновление");
+    //     requestStatus();
+    //     requestStatusPlayer();
+    //     closeModal(); // Закроем модальное окошко
+    // });
+
+}
+
 ///////////////////////////////////////////////////
 ///////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////
 // Модальные окна.
 ///////////////////////////////////////////////////
-
-// Модальное окно.
-// Получение самого элемента вверху скрипта.
-// // Получить модальное окно.
-const modal = document.getElementById("my-modal");
-
-// // Получить кнопку, которая открывает модальное окно.
-// const btnShowAllLogsParty = document.getElementById("show_all_logs_party");
-
-// // Получить элемент <span>, который закрывает модальное окно.
-const span = document.getElementsByClassName("close")[0];
 
 // Открыть модальное окно по нажатию.
 // btnShowAllLogsParty.onclick = function() {
@@ -867,7 +934,8 @@ function confimRecTurnModal() {
     content.innerHTML = `<div style="font-size: 25px">Новый ${statusGame.turn} ход</div>`;
     content.innerHTML += `<button onclick = confirmRecTurn() style="font-size: 25px; width: 150px">Отлично</button>`;
     // Сразу подвердим получени хода, чтобы окошко не выскакивало два раза
-    statusGame.endTurnKnow = true;
+    console.log("Подтверждаем получение хода.")
+    statusDynasty.end_turn_know = 1;
 }
 
 
