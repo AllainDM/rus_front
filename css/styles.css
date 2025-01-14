@@ -47,10 +47,42 @@ ul.mainmenu li a {
 ul.mainmenu li a:hover {
 	color: white;
 }
+.main-container {
+  width: 1024px;
+  display: flex; 
+}
 .container {
   width: 1024px;
-  display: flex; /* Используем flex-контейнер */
+  
 }
+
+/* Логи */
+
+.container-act-logs{
+  width: 100%;
+
+}
+
+.logs {
+  overflow: scroll; /* Добавляем полосы прокрутки */
+  margin: 3px;
+  max-height: 400px; /* Высота блока */
+  padding: 5px; /* Поля вокруг текста */
+  /* width: 95%; */
+  /* margin-top: 160px; */
+  /* float: left; */
+  font-size: 16px;
+  vertical-align:top;  
+  background: rgb(187, 183, 172);
+  outline: 2px solid #000; 
+  border: 3px solid #fff; 
+  border-radius: 5px;
+  
+}
+
+
+
+
 
 /* Стандартные серые окошки */
 .standart-window {

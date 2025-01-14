@@ -42,6 +42,9 @@ let statusDynasty = {
     group_units: {},
     units: {},
 
+    // Сохранение провинций по необходимости.
+    provinces: {},
+
 }
 
 // Параметры партии
@@ -66,6 +69,10 @@ let statusGame = {
     the_end: 0,
 
     date_create: "",
+
+    // Сохранение провинций.
+    provinces: {},
+    provinces_names: {},  // Названия провинций для отображения в различных случаях. {id: names}
 }
 
 /////////////////////////////////////////////
@@ -251,6 +258,8 @@ async function requestStatusPlayer() {
                 // Сделать модальное окошко?
                 // Создается в окне выбора провинции?
                 infoModal("Необходимо выбрать страну.", 30, 'choose-province.html', text_ok="Хорошо", text_no="Мне и так норм") // Второй аргумент размер шрифта основного текста
+                // !!!!! Необходимо релизовать полноценный вариант игры без провинции. 
+                // !!!!! Пока даже не выводятся параметры игрока.
                 // alert("У вас нет провинции")  // Тестовый алерт
                 // window.location.href = 'choose-province.html';
             } else {
@@ -395,6 +404,11 @@ function actualVarPlayer(res) {
     statusDynasty.end_turn = res[0].end_turn
     statusDynasty.end_turn_know = res[0].end_turn_know
 
+    statusDynasty.provinces = res[1]
+    console.log(`statusDynasty.provinces ${statusDynasty.provinces}`)
+    console.log(`statusDynasty.provinces[0] ${statusDynasty.provinces[0]["row_id"]}`)
+
+
     // Вывод провинций игрока.
     // Передадим ид таблицы вторым аргументом.
     tabName = 'table-user-province'
@@ -411,9 +425,11 @@ function actualVarPlayer(res) {
     // Выполним для каждой функции, ибо пока не решена проблема асинхронности.
     updateVar();
 
-    // Окошко информирования о новом ходе.
-    console.log(`statusDynasty.end_turn_know1 ${statusDynasty.end_turn_know}`)
+    logStart();
+    // logResultStart();
+    // logAllResultStart();
 
+    // Окошко информирования о новом ходе.
     if (statusDynasty.end_turn_know == 0) {
         console.log(`Ход не получен.`);
         confimRecTurnModal();
@@ -425,6 +441,10 @@ function actualVarPlayer(res) {
 
 // Функция записи данных в statusGame, после получения данных с сервера.
 function actualVarGame(res) {
+    // res[0] Словарь с основными параметрами партии
+    // res[1] Список с провинциями
+    // res[1][0] Словарь с провинциями
+    // res[1][1] Словарь с названиями провинций, гда ключ ид, а значение имя.
     statusGame.game_id = res[0].row_id
 
     statusGame.year = res[0].year
@@ -444,13 +464,16 @@ function actualVarGame(res) {
     console.log('!!!!!!!! statusGameDictGame');
     console.log(statusGame);
 
+    // Сохраним провинции.
+    statusGame.provinces = res[1][0]
+    statusGame.provinces_names = res[1][1]
 
     // Выывод провинций игрока.
     // let tab = document.getElementById('table-user-province');
     // Передадим ид таблицы вторым аргументом.
     tabName = 'table-all-province'
     // Передадим список провинций первым аргументов.
-    showProvs(res[1], tabName)
+    showProvs(res[1][0], tabName)
 
     // Запрос для обвновления данных на страничке.
     updateVar();
@@ -474,7 +497,7 @@ function showProvs(provs, tabName, type) {
 
     // С бека мы получаем массив, нужен цикл для переноса инфы
     statusSettlements = []
-    console.log("Вывод поселений.")
+    console.log(`Вывод поселений. ${type}`)
     for (i=0; i<provs.length; i++) {
         statusSettlements.push(provs[i])
         // statusSettlementsNames[res[1][i]["name_eng"]] = res[1][i]
@@ -489,9 +512,10 @@ function showProvs(provs, tabName, type) {
 
     // Кнопка атаки
     let attak_button = ""
-
     // Кнопка строительства
     let buildings_button = ""
+    // Кнопка повышения развития
+    let develop_button = ""
 
     tab.innerHTML = `            
         <thead>    
@@ -501,13 +525,17 @@ function showProvs(provs, tabName, type) {
         </thead>`
     
     provs.forEach((item, num) => {
-        // Кнопка атаки, только если провинция не принадлежит игроку.
+        // console.log(`Рисуем провинцию с ид: ${item["row_id"]} таблица ${tabName}`);
+        // Кнопки для провинций не принадлежащих игроку. Война.
         if (type != "player") {
-            attak_button = `<a id="btn-act-attack${item["row_id"]}">Атака</a>`
+            attak_button = `<a id="btn-act-attack-${item["row_id"]}-${tabName}">Атака</a>`
         }
-        // Кнопка строительства, только если провинция принадлежит игроку.
+        // Кнопки для провинций игрока. Строительство, развитие.
         if (type == "player") {
-            buildings_button = `<a id="btn-act-build${item["row_id"]}">Строительство</a>`
+            // Кнопка строительства, только если провинция принадлежит игроку.
+            buildings_button = `<a id="btn-act-build-${item["row_id"]}-${tabName}">Строительство</a>`
+            // Кнопка повышения развития, только если провинция принадлежит игроку.
+            develop_button = `<a id="btn-act-develop-${item["row_id"]}-${tabName}">Развитие</a>`
         }
         tab.insertAdjacentHTML("beforeend",
             `
@@ -534,12 +562,13 @@ function showProvs(provs, tabName, type) {
                 <td id='th-action'>
                     <div class="dropdown">
 
-                        <button id="btn-act-${item["row_id"]}" class="dropbtn">Действия</button>
+                        <button id="btn-act-${item["row_id"]}-${tabName}" class="dropbtn">Действия</button>
 
-                        <div id="dropdownProv${item["row_id"]}" class="dropdown-content">
+                        <div id="dropdownProv-${item["row_id"]}-${tabName}" class="dropdown-content">
                             ${attak_button}
-                            ${buildings_button}                            
-                            <a id="btn-act-decision${item["row_id"]}">Решения</a>
+                            ${buildings_button}   
+                            ${develop_button}                            
+                            <a id="btn-act-decision-${item["row_id"]}-${tabName}">Решения</a>
                         </div>
 
                     </div> 
@@ -552,9 +581,9 @@ function showProvs(provs, tabName, type) {
             `<td colspan="4" style="height: 1px;"></td>`
         );
 
-        document.getElementById(`btn-act-${item["row_id"]}`).addEventListener(('click'), () => {
-            console.log(`Нажата кнопка выбора действия в провинции с ид: ${item["row_id"]}`);
-            dropdownProvince(item["row_id"])
+        document.getElementById(`btn-act-${item["row_id"]}-${tabName}`).addEventListener(('click'), () => {
+            console.log(`Нажата кнопка выбора действия в провинции с ид: ${item["province_name"]}`);
+            dropdownProvince(item["row_id"], tabName)
         });
 
         // <a id="btn-act-war${item["row_id"]}">Атаковать</a>
@@ -566,26 +595,37 @@ function showProvs(provs, tabName, type) {
         //     // res[3] передаем всю армию, ид бек сам выберет. 
         //     // attack(item["row_id"], res[3]);
         // });
+        // Повесим событие на кнопку строительства.
         try {
-            document.getElementById(`btn-act-build${item["row_id"]}`).addEventListener(('click'), () => {
-                console.log(`Нажата кнопка строительства в провинции с ид: ${item["row_id"]}`);
-                console.log(`Что хранится в item: ${item}`);
-    
+            document.getElementById(`btn-act-build-${item["row_id"]}-${tabName}`).addEventListener(('click'), () => {
+                console.log(`Нажата кнопка строительства в провинции с ид: ${item["province_name"]}`);
+                
                 // menuNewBuilding(item);
             }); 
         } catch (error) {
             // console.log(error)
         }
+        // Повесим событие на кнопку решений.
         try {
-            document.getElementById(`btn-act-decision${item["row_id"]}`).addEventListener(('click'), () => {
-                console.log(`Нажата кнопка решений в провинции с ид: ${item["row_id"]}`);
-                console.log(`Что хранится в item: ${item}`);
-    
+            document.getElementById(`btn-act-decision-${item["row_id"]}-${tabName}`).addEventListener(('click'), () => {
+                console.log(`Нажата кнопка решений в провинции с ид: ${item["province_name"]}`);
+                
                 // startModalDonation(item);
             }); 
         } catch (error) {
-            
+            // console.log(error)            
         }
+        // Повесим событие на кнопку повышения развития.
+        try {
+            document.getElementById(`btn-act-develop-${item["row_id"]}-${tabName}`).addEventListener(('click'), () => {
+                console.log(`Нажата кнопка повышения развития в провинции ${item["province_name"]}`);
+                enhanceDevelopment(item["row_id"])
+                // startModalDonation(item);
+            }); 
+        } catch (error) {
+            // console.log(error)            
+        }
+
 
     });
        
@@ -690,25 +730,49 @@ function showUnits(group_units) {
 // Открыващее меню для действий с поселениями/провинциями.
 /* When the user clicks on the button,
 toggle between hiding and showing the dropdown content */
-function dropdownProvince(id_prov) {
-    document.getElementById(`dropdownProv${id_prov}`).classList.toggle("show");
+function dropdownProvince(id_prov, tabName) {
+    console.log("Запуск всплывающего окошка.");
+
+    document.getElementById(`dropdownProv-${id_prov}-${tabName}`).classList.toggle("show");
 }
 
 // Close the dropdown menu if the user clicks outside of it
-window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
+// !!!!!!!!!! Внимание, тут код взятый у чата.
+// window.onclick = function(event) {
+//     if (!event.target.matches('.dropbtn')) {
   
-      var dropdowns = document.getElementsByClassName("dropdown-content");
-      var i;
-      for (i = 0; i < dropdowns.length; i++) {
+//       var dropdowns = document.getElementsByClassName("dropdown-content");
+//       var i;
+//       for (i = 0; i < dropdowns.length; i++) {
+//         var openDropdown = dropdowns[i];
+//         if (openDropdown.classList.contains('show')) {
+//           openDropdown.classList.remove('show');
+//         }
+//       }
+//     }
+//   } 
+// Обработчик клика по всему окну
+window.onclick = function(event) {
+    // Получаем все всплывающие окна
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+
+    // Закрываем все открытые положения
+    for (var i = 0; i < dropdowns.length; i++) {
         var openDropdown = dropdowns[i];
         if (openDropdown.classList.contains('show')) {
-          openDropdown.classList.remove('show');
+            openDropdown.classList.remove('show');
         }
-      }
     }
-  } 
 
+    // Если нажата кнопка с классом "dropbtn"
+    if (event.target.matches('.dropbtn')) {
+        // Находим всплывающее меню, связанное с нажатой кнопкой
+        var dropdown = event.target.nextElementSibling; // Предполагается, что меню сразу следует за кнопкой
+
+        // Переключаем состояние видимости меню
+        dropdown.classList.toggle('show');
+    }
+}
 
 // Запросы к серверу для получения данных о партии и игроке.
 // Вывод данных на странице.
@@ -719,15 +783,71 @@ updateAll()
 
 
 ///////////////////////////////////////////////////
+// Действия и логи.
+///////////////////////////////////////////////////
+// Лог действий.
+// Лог итогов нашего хода.
+// Лог итогов хода всех игроков.
+
+
+// Лог действий.
+function logStart() {       //Функция запуска будущего лога
+    let listLogs = document.getElementById('logs');
+    listLogs.innerText = 'Ваши действия';  // Очистим
+    if (statusDynasty.body_points - statusDynasty.acts.length < 0) {
+        listLogs.innerText += '\n Внимание, вы запланировали больше чем у вас доступно "очков действий", все не выполненные перенесутся на следующий ход.'
+    }
+    statusDynasty.acts.forEach((item, num) => {  
+        // let a = document.getElementById('logs');
+        listLogs.insertAdjacentHTML('beforeend', `<div>${num + 1}: ${item[0]}</div>`);
+    });
+}
+
+// Лог итогов нашего хода.
+function logResultStart() {      
+    document.getElementById('logs-result').innerText = 'Лог прошлого хода';  // Очистим + подсказка
+    console.log(`Тут выведем все логи: ${statusGame.logsText}`)
+    statusGame.logsText.forEach((item, num) => {  
+        let a = document.getElementById('logs-result');
+        a.insertAdjacentHTML('beforeend', `<div>${num + 1}: ${item}</div>`);
+    }); 
+}
+
+// Лог итогов хода всех игроков.
+function logAllResultStart() {       
+    document.getElementById('all-logs-result').innerText = 'Общий лог прошлого хода';  // Очистим + подсказка
+    statusGame.allLogs.forEach((item, num) => {  
+        let a = document.getElementById('all-logs-result');
+        a.insertAdjacentHTML('beforeend', `<div>${num + 1}: ${item}</div>`);
+    }); 
+}
+///////////////////////////////////////////////////
+///////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////
 // Основные действия по кнопкам
 ///////////////////////////////////////////////////
+// Развитие
 // Война
 
 ///////////////////////////////////////////////////
 
+// Развитие. Простая стартовая механика, для повышения уровня развития.
+function enhanceDevelopment(settl_id) {  // 404
+    console.log("Запуск функции пазвития.");
+    console.log("Модалку временно не рисуем.");
+    console.log(settl_id);
+    console.log(statusGame.provinces_names);
+    statusDynasty.acts.push([`Повышаем развитие в ${statusGame.provinces_names[settl_id]}.`, 
+    404, settl_id]) 
+    console.log(statusDynasty.acts);
+    postAct();
+    logStart();
+    // closeModal();
+}
 
 // Война
-
 function attack(settl_id, army) {  // 404
     console.log("Запуск функции нападения.");
     console.log("Модалку временно не рисуем.");
@@ -736,7 +856,7 @@ function attack(settl_id, army) {  // 404
     statusDynasty.acts.push([`Атакуем: ${settl_id} (Вывести имена поселений)`, 
     404, settl_id, army]) 
     // postAct(statusGame.game_id);
-    // logStart();
+    logStart();
     // closeModal();
 }
 
@@ -749,8 +869,10 @@ function attack(settl_id, army) {  // 404
 // Отправка действий на сервер.
 ///////////////////////////////////////////////////
 // Событие на кнопку отправки хода.
+// Функция отправки действий, заново отправляется весь список.
 // Функция отправки(подтверждения) хода.
 
+// Подтвердить получение хода, чтобы не вылазило оповещение.
 ///////////////////////////////////////////////////
 
 // Событие на кнопку отправки хода.
@@ -769,11 +891,44 @@ document.getElementById('end-turn-btn').addEventListener('click', () => {
     // postTurn(statusGame.game_id); // Передадим ИД партии аргументом, он сразу уйдет на Бек для определения к какой партии присвоить ход
 })
 
-// Функция отправки(подтверждения) хода.
+// Функция отправки действий, заново отправляется весь список.
+// Отключаем отловку ошибок, ибо при разработке не видно в чем проблема.
+async function postAct() {
+    console.log("Запрос на отправку действий. 1");
+    const token = localStorage.getItem('token');
+    try {             
+        const response = await fetch(`http://localhost:8000/post_act?game_id=${statusGame.game_id}`, {
+                    
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(statusDynasty.acts) // Все действия отправляются по отдельности
+            
+        });
+        
+        if (!response.ok) {
+            throw new Error('Сеть ответила с ошибкой: ' + response.status);
+        } else {
+            console.log("Запрос на отправку действий. 2");
+            // Что тут возвращается с сервера?
+            // let res = await response.json()
+            // console.log(res);
+            // actualVarGame(res);
+            // location.reload();
+        }
 
+    } catch (error) {
+        console.error('Ошибка при отправке запроса:', error);
+    }
+
+};
+
+// Функция отправки(подтверждения) хода.
 // Отключаем отловку ошибок, ибо при разработке не видно в чем проблема.
 async function postTurn() {
-
+    console.log("Запрос на отправку хода. 1");
     const token = localStorage.getItem('token');
         try {             
             const response = await fetch(`http://localhost:8000/post_turn?game_id=${statusGame.game_id}`, {
@@ -782,7 +937,9 @@ async function postTurn() {
                     'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(statusDynasty.acts) // Все действия отправляются по отдельности
+                // Сервер это на данные момент не обрабатывает, ибо...
+                // Все действия отправляются по отдельности
+                body: JSON.stringify(statusDynasty.acts) 
             });
             
             if (!response.ok) {
@@ -830,22 +987,6 @@ async function confirmRecTurn() {
     } catch (error) {
         console.error('Ошибка при создании игровой сессии:', error);
     }
-
-    // const request = new XMLHttpRequest();
-    // request.open('GET', `/confirm_rec_turn?gameID=${statusGame.game_id}`);
-    // request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-    
-    // console.log(JSON.stringify(statusGame.acts));
-    // // Это можно удалить???
-    // request.send(JSON.stringify(statusGame.acts));
-
-    // request.addEventListener('load', () => {
-    //     console.log("Автообновление");
-    //     requestStatus();
-    //     requestStatusPlayer();
-    //     closeModal(); // Закроем модальное окошко
-    // });
-
 }
 
 ///////////////////////////////////////////////////
