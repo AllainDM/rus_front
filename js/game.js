@@ -6,6 +6,7 @@ console.log('Стрипт странички игры успешно загру�
 // Параметры игрока и партии
 // Обработка вкладок
 // Функции запроса и загрузки данных с сервера
+// Обновленние параметров и вывод на странице
 // Основные действия по кнопкам
 // Модальные окна
 
@@ -34,7 +35,7 @@ let statusDynasty = {
 
     acts: [],                       // 
     result_logs_text: [],           // Логи за последний ход.
-    result_logs_text_all_turns: [], // Логи за все ходы.
+    result_logs_text_all_turns: [], // Логи за все ходы. 
     end_turn: false,                // Подтверждение готовности хода.
     end_turn_know: false,            // Оповещение о новом ходе.
 
@@ -68,6 +69,9 @@ let statusGame = {
     is_active: 1,
     the_end: 0,
 
+    // Логи
+    result_public_logs_text: [],           // Логи за последний ход.
+    result_public_logs_text_all_turns: [], // Логи за все ходы. 
     date_create: "",
 
     // Сохранение провинций.
@@ -89,8 +93,9 @@ let statusGame = {
 // // Получить модальное окно.
 const modal = document.getElementById("my-modal");
 
-// // Получить кнопку, которая открывает модальное окно.
-// const btnShowAllLogsParty = document.getElementById("show_all_logs_party");
+// Получить кнопку, которая открывает модальное окно
+const btnShowAllLogsParty = document.getElementById("show_all_logs_party");
+const btnShowAllLogsPartyPlayers = document.getElementById("show_all_logs_party_players");
 
 // // Получить элемент <span>, который закрывает модальное окно.
 const span = document.getElementsByClassName("close")[0];
@@ -375,7 +380,7 @@ function updateVar() {
 function actualVarPlayer(res) {
     // console.log('!!!!!!!! statusDynasty');
     // console.log(statusDynasty);
-    console.log('!!!!!!!! res');
+    console.log('!!!!!!!! actualVarPlayer res');
     console.log(res);
 
     // res - получение данных с сервера
@@ -385,6 +390,7 @@ function actualVarPlayer(res) {
     // [2][0] - данных об армиях, хз что тут
     // [2][1] - данных об отрядах, хз что тут
     // [2][2] - данных о юнитах, хз что тут
+    // [3] - логи за последний ход. для получения более ранних необходим отдельный запрос, выполняемый по необходимости, дабы не нагружать сеть.
 
     // Запись основных параметров игрока.
     statusDynasty.dynasty_name = res[0].dynasty_name
@@ -398,15 +404,15 @@ function actualVarPlayer(res) {
 
     statusDynasty.acts = res[0].acts
 
-    // statusDynasty.result_logs_text = res[0].result_logs_text
+    statusDynasty.result_logs_text = res[3]
     // statusDynasty.result_logs_text_all_turns = res[0].result_logs_text_all_turns
 
     statusDynasty.end_turn = res[0].end_turn
     statusDynasty.end_turn_know = res[0].end_turn_know
 
     statusDynasty.provinces = res[1]
-    console.log(`statusDynasty.provinces ${statusDynasty.provinces}`)
-    console.log(`statusDynasty.provinces[0] ${statusDynasty.provinces[0]["row_id"]}`)
+    // console.log(`statusDynasty.provinces ${statusDynasty.provinces}`)
+    // console.log(`statusDynasty.provinces[0] ${statusDynasty.provinces[0]["row_id"]}`)
 
 
     // Вывод провинций игрока.
@@ -425,9 +431,9 @@ function actualVarPlayer(res) {
     // Выполним для каждой функции, ибо пока не решена проблема асинхронности.
     updateVar();
 
-    logStart();
-    // logResultStart();
-    // logAllResultStart();
+    // Логи.
+    logStart();     // Планируемые действия.
+    logResultStart();   // Лог игрока прошлого хода. Общедоступные запускаются из statusGame
 
     // Окошко информирования о новом ходе.
     if (statusDynasty.end_turn_know == 0) {
@@ -437,14 +443,20 @@ function actualVarPlayer(res) {
         console.log(`Ход получен.`);
     };
 
+    // Проверим итог в консоли.
+    console.log('!!!!!!!! Параметры игрока.');
+    console.log(statusDynasty);
 }
 
 // Функция записи данных в statusGame, после получения данных с сервера.
 function actualVarGame(res) {
+    console.log('!!!!!!!! actualVarGame res');
+    console.log(res)
     // res[0] Словарь с основными параметрами партии
     // res[1] Список с провинциями
     // res[1][0] Словарь с провинциями
     // res[1][1] Словарь с названиями провинций, гда ключ ид, а значение имя.
+    // res[2] Общедоступные логи.
     statusGame.game_id = res[0].row_id
 
     statusGame.year = res[0].year
@@ -461,12 +473,12 @@ function actualVarGame(res) {
 
     statusGame.date_create = res[0].date_create
 
-    console.log('!!!!!!!! statusGameDictGame');
-    console.log(statusGame);
-
     // Сохраним провинции.
     statusGame.provinces = res[1][0]
     statusGame.provinces_names = res[1][1]
+
+    // Логи
+    statusGame.result_public_logs_text = res[2]
 
     // Выывод провинций игрока.
     // let tab = document.getElementById('table-user-province');
@@ -477,6 +489,12 @@ function actualVarGame(res) {
 
     // Запрос для обвновления данных на страничке.
     updateVar();
+
+    logPublicResultStart();
+    
+    // Проверим итог в консоли.
+    console.log('!!!!!!!! Параметры игры.');
+    console.log(statusGame);
 }
 
 // Запросы к серверу для получения данных о партии и игроке.
@@ -806,19 +824,20 @@ function logStart() {       //Функция запуска будущего л�
 // Лог итогов нашего хода.
 function logResultStart() {      
     document.getElementById('logs-result').innerText = 'Лог прошлого хода';  // Очистим + подсказка
-    console.log(`Тут выведем все логи: ${statusGame.logsText}`)
-    statusGame.logsText.forEach((item, num) => {  
+    console.log(`Тут выведем логи игрока: ${statusDynasty.result_logs_text}`)
+    statusDynasty.result_logs_text.forEach((item, num) => {  
         let a = document.getElementById('logs-result');
-        a.insertAdjacentHTML('beforeend', `<div>${num + 1}: ${item}</div>`);
+        a.insertAdjacentHTML('beforeend', `<div>${num + 1}: Ход ${item["turn"]}. ${item["text"]}</div>`);
     }); 
 }
 
 // Лог итогов хода всех игроков.
-function logAllResultStart() {       
-    document.getElementById('all-logs-result').innerText = 'Общий лог прошлого хода';  // Очистим + подсказка
-    statusGame.allLogs.forEach((item, num) => {  
-        let a = document.getElementById('all-logs-result');
-        a.insertAdjacentHTML('beforeend', `<div>${num + 1}: ${item}</div>`);
+function logPublicResultStart() {       
+    document.getElementById('public-logs-result').innerText = 'Общий лог прошлого хода';  // Очистим + подсказка
+    console.log(`Тут выведем общедоступные логи: ${statusGame.result_public_logs_text}`)
+    statusGame.result_public_logs_text.forEach((item, num) => {  
+        let a = document.getElementById('public-logs-result');
+        a.insertAdjacentHTML('beforeend', `<div>${num + 1}: Ход ${item["turn"]}. ${item["text"]}</div>`);
     }); 
 }
 ///////////////////////////////////////////////////
