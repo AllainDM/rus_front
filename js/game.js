@@ -427,6 +427,9 @@ function actualVarPlayer(res) {
     // Данные об отрядах передадим аргументом.
     showUnits(res[2][1]); 
     
+    // Вывод армий игрока.
+    // Данные об армиях передадим аргументом.
+    showArmy(res[2][0]); 
 
     // Запрос для обвновления данных на страничке.
     // Выполним для каждой функции, ибо пока не решена проблема асинхронности.
@@ -644,106 +647,164 @@ function showProvs(provs, tabName, type) {
         } catch (error) {
             // console.log(error)            
         }
-
-
-    });
-       
+    });       
 }
 
-// Функция сбора и отображения юнитов
+// Функция отображения отрядов
 function showUnits(group_units) {
     let unitsTab = document.getElementById('table-units');
-    unitsTab.innerHTML = ''
-    unitsTab.insertAdjacentHTML('beforeend', `            
-        <thead>    
-            <tr class="table-units">
-                <th class="th"><span"> Расположение</span> </th>
+    if (group_units.length > 0) {
+        unitsTab.innerHTML = ''
+        unitsTab.insertAdjacentHTML('beforeend', `            
+            <thead>    
+                <tr class="table-units">
+                    <th class="th"><span"> Расположение</span> </th>
 
-                <th class="th"><span class="rotate-sm-90"> Кол-во.</span></th>
-                <th class="th"><span class="rotate-sm-90"> HP</span></th>
-                <th class="th"><span class="rotate-sm-90"> Выносл.</span></th>
+                    <th class="th"><span class="rotate-sm-90"> Кол-во.</span></th>
+                    <th class="th"><span class="rotate-sm-90"> HP</span></th>
+                    <th class="th"><span class="rotate-sm-90"> Выносл.</span></th>
 
-                <th class="th"><span class="rotate-sm-90"> Сила</span></th>
-                <th class="th"><span class="rotate-sm-90"> Ловкость</span></th>
+                    <th class="th"><span class="rotate-sm-90"> Сила</span></th>
+                    <th class="th"><span class="rotate-sm-90"> Ловкость</span></th>
 
-                <th class="th"><span class="rotate-sm-90"> Броня</span></th>
-                <th class="th"><span class="rotate-sm-90"> Щит</span></th>
+                    <th class="th"><span class="rotate-sm-90"> Броня</span></th>
+                    <th class="th"><span class="rotate-sm-90"> Щит</span></th>
 
-                <th class="th"><span class="rotate-sm-90"> Бл. бой</span></th>
-                <th class="th"><span class="rotate-sm-90"> Оружие</span></th>
-                <th class="th"><span class="rotate-sm-90"> Дал. бой</span></th>
-                <th class="th"><span class="rotate-sm-90"> Лук</span></th>
-                <th class="th"><span class="rotate-sm-90"> Опыт</span></th>
-                <th class="th">Имя</th>
-                <th class="th"></th>
-            </tr>
-        </thead>`)
-    console.log("Собираем отряды.");
-    console.log(group_units)
-    for (i=0;i<group_units.length;i++) {
-        console.log(`Вывод отряда ${group_units[i]}`)
-        unitsTab.insertAdjacentHTML("beforeend", 
-            `<tr class="table units">
-                <td>${group_units[i]["location_name"]}</th>
-                <td>${group_units[i]["count_units"]}</th>
-                <td>${group_units[i]["hp_cur"]}/${group_units[i]["hp_max"]}</th>
-                <td>${group_units[i]["endurance_cur"]}/${group_units[i]["endurance_max"]}</th>
-                <td>${group_units[i]["strength"]}</th>
-                <td>${group_units[i]["agility"]}</th>
-                <td>${group_units[i]["armor"]}</th>
-                <td>${group_units[i]["shield"]}</th>
-                <td>${group_units[i]["melee_skill"]}</th>
-                <td>${group_units[i]["melee_weapon"]}</th>
-                <td>${group_units[i]["ranged_skill"]}</th>
-                <td>${group_units[i]["ranged_weapon"]}</th>
-                <td>${group_units[i]["experience"]}</th>
-                <td>${group_units[i]["name"]}</th>
-                
-                <td><label for="cheсked-unit-${group_units[i]["row_id"]}">Выбрать
-                    <input class="cheсked-unit" id="cheсked-unit-${group_units[i]["row_id"]}" type="checkbox">
-                </label></th>
-                                
-            </tr>`
-        );
+                    <th class="th"><span class="rotate-sm-90"> Бл. бой</span></th>
+                    <th class="th"><span class="rotate-sm-90"> Оружие</span></th>
+                    <th class="th"><span class="rotate-sm-90"> Дал. бой</span></th>
+                    <th class="th"><span class="rotate-sm-90"> Лук</span></th>
+                    <th class="th"><span class="rotate-sm-90"> Опыт</span></th>
+                    <th class="th">Имя</th>
+                    <th class="th"></th>
+                </tr>
+            </thead>`)
+        console.log("Собираем отряды.");
+        console.log(group_units)
+        for (i=0;i<group_units.length;i++) {
+            console.log(`Вывод отряда ${group_units[i]}`)
+            unitsTab.insertAdjacentHTML("beforeend", 
+                `<tr class="table units">
+                    <td>${group_units[i]["location_name"]}</th>
+                    <td>${group_units[i]["count_units"]}</th>
+                    <td>${group_units[i]["hp_cur"]}/${group_units[i]["hp_max"]}</th>
+                    <td>${group_units[i]["endurance_cur"]}/${group_units[i]["endurance_max"]}</th>
+                    <td>${group_units[i]["strength"]}</th>
+                    <td>${group_units[i]["agility"]}</th>
+                    <td>${group_units[i]["armor"]}</th>
+                    <td>${group_units[i]["shield"]}</th>
+                    <td>${group_units[i]["melee_skill"]}</th>
+                    <td>${group_units[i]["melee_weapon"]}</th>
+                    <td>${group_units[i]["ranged_skill"]}</th>
+                    <td>${group_units[i]["ranged_weapon"]}</th>
+                    <td>${group_units[i]["experience"]}</th>
+                    <td>${group_units[i]["name"]}</th>
+                    
+                    <td><label for="cheсked-unit-${group_units[i]["row_id"]}">Выбрать
+                            <input class="cheсked-unit" id="cheсked-unit-${group_units[i]["row_id"]}" type="checkbox">
+                        </label>
+                    </dh>
+                                    
+                </tr>`
+            );
 
+        }
+
+        // // Кнопка подтвердить для изменений с юнитаи
+        // document.getElementById('apply-changes-units').addEventListener('click', () => {
+        //     const chooseAction = document.getElementById('unit-select-action');
+        //     console.log("Выбираем действие с юнитами.");
+        //     console.log(chooseAction.value);
+        //     const checkBoxs = document.querySelectorAll('.cheсked-unit');
+        //     let ckeckedUnits = []  // Список для сохранание ид выбранных юнитов.
+        //     for (c=0;c<checkBoxs.length;c++) { 
+        //         if (checkBoxs[c].checked) {
+        //             ckeckedUnits.push(checkBoxs[c].id.slice(13))
+        //         }
+        //     }
+        //     console.log(`Выбранные юниты: ${ckeckedUnits}`)
+        //     let arg = [ckeckedUnits]  // Первый аргумент список юнитов. Остальное добавлять по необходимости.
+        //     if (ckeckedUnits.length > 0) {
+        //         if (chooseAction.value == "dismiss") {
+        //             console.log("dismissUnits");
+        //             console.log(arg);
+        //             dismissUnits(arg)
+        //         } else if (chooseAction.value == "train") {
+        //             console.log("trainUnits");
+        //             console.log(arg);
+        //             trainUnits(arg)
+        //         } else if (chooseAction.value == "create-army") {
+        //             console.log("createArmy");
+        //             console.log(arg);
+        //             // Если не выбрана армия к которой присоединяются юниты, передаем 0, будет создана новая
+        //             arg.push(0)
+        //             createArmy(arg)
+        //         }
+        //     } else {
+        //         alert("Юниты не выбраны.")
+        //     }
+
+        // });
     }
 
-    // // Кнопка подтвердить для изменений с юнитаи
-    // document.getElementById('apply-changes-units').addEventListener('click', () => {
-    //     const chooseAction = document.getElementById('unit-select-action');
-    //     console.log("Выбираем действие с юнитами.");
-    //     console.log(chooseAction.value);
-    //     const checkBoxs = document.querySelectorAll('.cheсked-unit');
-    //     let ckeckedUnits = []  // Список для сохранание ид выбранных юнитов.
-    //     for (c=0;c<checkBoxs.length;c++) { 
-    //         if (checkBoxs[c].checked) {
-    //             ckeckedUnits.push(checkBoxs[c].id.slice(13))
-    //         }
-    //     }
-    //     console.log(`Выбранные юниты: ${ckeckedUnits}`)
-    //     let arg = [ckeckedUnits]  // Первый аргумент список юнитов. Остальное добавлять по необходимости.
-    //     if (ckeckedUnits.length > 0) {
-    //         if (chooseAction.value == "dismiss") {
-    //             console.log("dismissUnits");
-    //             console.log(arg);
-    //             dismissUnits(arg)
-    //         } else if (chooseAction.value == "train") {
-    //             console.log("trainUnits");
-    //             console.log(arg);
-    //             trainUnits(arg)
-    //         } else if (chooseAction.value == "create-army") {
-    //             console.log("createArmy");
-    //             console.log(arg);
-    //             // Если не выбрана армия к которой присоединяются юниты, передаем 0, будет создана новая
-    //             arg.push(0)
-    //             createArmy(arg)
-    //         }
-    //     } else {
-    //         alert("Юниты не выбраны.")
-    //     }
+}
 
-    // });
+// Функция отображения армий
+function showArmy(army) {
+    let unitsTab = document.getElementById('table-army');
+    if (army.length > 0) {
+        unitsTab.innerHTML = ''
+        unitsTab.insertAdjacentHTML('beforeend', `            
+            <thead>    
+                <tr class="table-army">
+                    <th class="th"><span">Расположение</span> </th>
+                    <th class="th"><span">Дом.провинция</span> </th>
 
+                    <th class="th"><span class="rotate-sm-90">Отряды</span></th>
+                    <th class="th"><span class="rotate-sm-90">Юниты</span></th>
+
+                    <th class="th"><span class="rotate-sm-90">HP</span></th>
+                    <th class="th"><span class="rotate-sm-90">Выносл</span></th>
+
+
+                    <th class="th">Имя</th>
+                    <th class="th"></th>
+                </tr>
+            </thead>`)
+        console.log("Собираем армии.");
+        console.log(army)
+        for (i=0;i<army.length;i++) {
+            console.log(`Вывод армий ${army[i]}`)
+            // Необходимо обработать 0-ю локацию
+            let location = statusGame.provinces_names[army[i]["location"]]
+            if (typeof(location) == "undefined") {location = "Неопределено"}
+            let home_location = statusGame.provinces_names[army[i]["home_location"]]
+            if (typeof(home_location) == "undefined") {home_location = "Неопределено"}
+
+            unitsTab.insertAdjacentHTML("beforeend", 
+                `<tr class="table units">
+                    <td>${location}</th>
+                    <td>${home_location}</th>
+
+                    <td>${army[i]["count_groups"]}</th>
+                    <td>${army[i]["count_units"]}</th>
+
+                    <td>${army[i]["hp_cur"]}/${army[i]["hp_max"]}</th>
+                    <td>${army[i]["endurance_cur"]}/${army[i]["endurance_max"]}</th>
+
+                    <td>${army[i]["name"]}</th>
+                    
+                    <td><label for="cheсked-unit-${army[i]["row_id"]}">Выбрать
+                        <input class="cheсked-unit" id="cheсked-unit-${army[i]["row_id"]}" type="checkbox">
+                        </label>
+                    </td>                                    
+                </tr>`
+            );
+        }
+    } else {
+        unitsTab.innerHTML = 'нет'
+    }
+    
 }
 
 // Открыващее меню для действий с поселениями/провинциями.

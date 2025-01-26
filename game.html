@@ -124,13 +124,25 @@
                     <!-- Окошко армии -->        
                     <div class="container" id="army-window">
                         <div>
-                            <button id="create-empty-army">Сформировать пустую армию</button>
+                            <div>
+                                <span style="font-size: 22px;">Формирование армии</span>
+                            </div>                            
+                            <button style="margin-top: 3px;" id="create-empty-army">Сформировать пустую армию</button>
+                            <hr>
+                        </div>
+                        <div id="army-window">
+                            <div>
+                                <span style="font-size: 22px;">Список армий</span>
+                            </div>
+                            <table style="margin-top: 3px;"  class="table" id="table-army"></table>
                             <hr>
                         </div>
                         <div id="units-window">
-                            <table class="table" id="table-units">  
-                                
-                            </table>
+                            <div>
+                                <span style="font-size: 22px;">Список отрядов</span>
+                            </div>
+                            <table style="margin-top: 3px;"  class="table" id="table-units"></table>
+                            
                             <div style="background-color: gray; margin-bottom: 30px;">
                                 <span>Выберите действие с отрядом: </span>
                                 <select name="unit-select-action" id="unit-select-action" size="1" style="font-size: 17px; background-color: rgb(175, 170, 170);">
@@ -159,7 +171,7 @@
                 
             </div>
         
-            </section>
+        </section>
 
     </div>
 
