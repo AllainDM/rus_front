@@ -1,13 +1,4 @@
 
-// Получение адреса сервера из конфига.
-async function getConfig() {
-    const response = await fetch('./config/env.json');
-    if (!response.ok) {
-        throw new Error('Не удалось загрузить конфигурацию: ' + response.status);
-    }
-    return await response.json();
-}
-
 // Выведем список меню
 async function showMenu() {
     document.addEventListener("DOMContentLoaded", async function () {
@@ -33,10 +24,9 @@ async function showMenu() {
 
 async function getMenu() {
     const token = localStorage.getItem('token');
+    // Получим url из локального хранилища. Устанавливается в menu.js
+    const apiUrl = localStorage.getItem('apiUrl');
     try {
-        const config = await getConfig(); // Получим конфигурацию
-        const apiUrl = config.API_URL; // Извлечём URL из конфигурации
-
         const response = await fetch(`${apiUrl}/menu`, {
             method: 'GET',
             headers: {

@@ -1,9 +1,33 @@
 console.log('Стрипт отображения меню успешно загружен.');
 
 // Получение адреса сервера из конфига. Неа
-const apiUrl = "http://localhost:8000";
-// Сохраняем url в локальное хранилище
-localStorage.setItem('apiUrl', apiUrl);
+// const apiUrl = "http://localhost:8000";
+// const apiUrl = "";
+
+function getConfig() {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", './config/env.json', true); // асинхронный запрос
+    xhr.onload = function() {
+        if (xhr.status >= 200 && xhr.status < 300) {
+            const responseObject = JSON.parse(xhr.responseText);
+            const apiUrl = responseObject.apiUrl;
+            console.log(apiUrl); 
+            // Сохраняем url в локальное хранилище
+            localStorage.setItem('apiUrl', apiUrl);
+        } else {
+            console.error('Error:', xhr.statusText); // обрабатываем ошибку
+        }
+    };
+    xhr.onerror = function() {
+        console.error('Request failed'); // обрабатываем ошибку сети
+    };
+    xhr.send();
+}
+
+getConfig();
+
+// // Сохраняем url в локальное хранилище
+// localStorage.setItem('apiUrl', apiUrl);
 
 // Выведем список меню
 async function showMenu() {
@@ -32,6 +56,8 @@ async function showMenu() {
 
 async function getMenu() {
     const token = localStorage.getItem('token');
+    // Получим url из локального хранилища. Устанавливается в menu.js
+    const apiUrl = localStorage.getItem('apiUrl');
     if (token) {
         try {    
             const response = await fetch(`${apiUrl}/menu`, {

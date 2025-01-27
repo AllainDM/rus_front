@@ -9,15 +9,6 @@ const chooseNewGameList = document.querySelector('.choose-new-game');
 // Для создания новой игры
 const createNewGameList = document.querySelector('.create-new-game');
 
-// Получение адреса сервера из конфига.
-async function getConfig() {
-    const response = await fetch('./config/env.json');
-    if (!response.ok) {
-        throw new Error('Не удалось загрузить конфигурацию: ' + response.status);
-    }
-    return await response.json();
-}
-
 // Запрос статуса для отображения выбора одной из своих игр
 async function requestStatusMyGames() {
     const token = localStorage.getItem('token');

@@ -4,15 +4,6 @@ console.log('Стрипт странички выбора провинции д�
 // Будущий список выбора игры
 const chooseList = document.querySelector('.choose-list');
 
-// Получение адреса сервера из конфига.
-async function getConfig() {
-    const response = await fetch('./config/env.json');
-    if (!response.ok) {
-        throw new Error('Не удалось загрузить конфигурацию: ' + response.status);
-    }
-    return await response.json();
-}
-
 // Запрос статуса для отображения выбора одной из своих игр
 async function requestStatusProvinces() {
     const token = localStorage.getItem('token');
