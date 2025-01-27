@@ -1,12 +1,16 @@
 console.log('Стрипт странички аутенфикации успешно загружен.');
 
+
 async function login() {
     const username = document.getElementById('login').value;
     console.log(username)
     const password = document.getElementById('psw').value;
     console.log(password)
 
-    const response = await fetch('http://localhost:8000/login', {
+    // Получим url из локального хранилища. Устанавливается в menu.js
+    const apiUrl = localStorage.getItem('apiUrl');
+
+    const response = await fetch(`${apiUrl}/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -34,7 +38,10 @@ async function login() {
 }
 
 async function getUserInfo(token) {
-    const response = await fetch('http://localhost:8000/me', {
+    // Получим url из локального хранилища. Устанавливается в menu.js
+    const apiUrl = localStorage.getItem('apiUrl');
+
+    const response = await fetch(`${apiUrl}/me`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,

@@ -1,5 +1,10 @@
 console.log('Стрипт отображения меню успешно загружен.');
 
+// Получение адреса сервера из конфига. Неа
+const apiUrl = "http://localhost:8000";
+// Сохраняем url в локальное хранилище
+localStorage.setItem('apiUrl', apiUrl);
+
 // Выведем список меню
 async function showMenu() {
     document.addEventListener("DOMContentLoaded", async function () {
@@ -28,8 +33,8 @@ async function showMenu() {
 async function getMenu() {
     const token = localStorage.getItem('token');
     if (token) {
-        try {
-            const response = await fetch(`http://localhost:8000/menu`, {
+        try {    
+            const response = await fetch(`${apiUrl}/menu`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок

@@ -25,8 +25,10 @@ console.log('Стрипт странички игры успешно загру�
 
 // Параметры игрока
 let statusDynasty = {
+    player_id: 0,  // id игрока
     dynasty_name: "нет",               // Название династии.
     player_name: "",
+    home_province_id: 0,
     gold: 0,                        // Казна игрока.
     win_points: 0,                  // Победные очки.
 
@@ -76,7 +78,7 @@ let statusGame = {
     date_create: "",
 
     // Сохранение провинций.
-    provinces: {},
+    provinces: {}, // Необходимы данные, в которых будет храниться список соседей для навигации
     provinces_names: {},  // Названия провинций для отображения в различных случаях. {id: names}
 }
 
@@ -395,6 +397,7 @@ function actualVarPlayer(res) {
 
     // Запись основных параметров игрока.
     statusDynasty.dynasty_name = res[0].dynasty_name
+    statusDynasty.player_id = res[0].player_id,  // id игрока
     // statusDynasty.player_name = res.player_name
     statusDynasty.gold = res[0].gold
     // statusDynasty.win_points = res.win_points
@@ -412,6 +415,7 @@ function actualVarPlayer(res) {
     statusDynasty.end_turn_know = res[0].end_turn_know
 
     statusDynasty.provinces = res[1]
+    statusDynasty.home_province_id = res[0].home_province_id
     // console.log(`statusDynasty.provinces ${statusDynasty.provinces}`)
     // console.log(`statusDynasty.provinces[0] ${statusDynasty.provinces[0]["row_id"]}`)
 
@@ -549,16 +553,35 @@ function showProvs(provs, tabName, type) {
     provs.forEach((item, num) => {
         // console.log(`Рисуем провинцию с ид: ${item["row_id"]} таблица ${tabName}`);
         // Кнопки для провинций не принадлежащих игроку. Война.
+        // !!!! Необходимо решить выводить ли провинции игрока на вкладке карта
         if (type != "player") {
+            // На общей карте не выводим провинции игрока.
+            if (item["ruler_id"] == statusDynasty.player_id) {
+                return;
+            }
+            // Иначе можно нарисовать кнопку атаки.
             attak_button = `<a id="btn-act-attack-${item["row_id"]}-${tabName}">Атака</a>`
         }
         // Кнопки для провинций игрока. Строительство, развитие.
-        if (type == "player") {
+        if (type == "player") {            
             // Кнопка строительства, только если провинция принадлежит игроку.
             buildings_button = `<a id="btn-act-build-${item["row_id"]}-${tabName}">Строительство</a>`
             // Кнопка повышения развития, только если провинция принадлежит игроку.
             develop_button = `<a id="btn-act-develop-${item["row_id"]}-${tabName}">Развитие</a>`
         }
+        // Опеределим статус.
+        let status_province = item["status"]
+        // console.log(`Определяем статус провинции: item["row_id"] ${item["row_id"]}. statusDynasty["home_province_id"] ${statusDynasty["home_province_id"]}`)
+        
+        // console.log(`StatusDynasty ${statusDynasty.home_province_id}`)
+        if (item["row_id"] == statusDynasty["home_province_id"]) {
+            status_province = "Столица"
+        } else if (type == "player") {
+            status_province = "Наше"
+        } else {
+            status_province = "Неизвестно"
+        }
+        // let status_province = "Неизвестно"
         tab.insertAdjacentHTML("beforeend",
             `
             <tr>                    
@@ -576,7 +599,7 @@ function showProvs(provs, tabName, type) {
                 </td>
 
                 <td>
-                    Статус: ${item["status"]}<br>
+                    Статус: ${status_province}<br>
                     Крепость: ${item["fort"]}<br>
 
                 </td>
@@ -989,6 +1012,8 @@ function attack(settl_id, army) {  // 404
 // Подтвердить получение хода, чтобы не вылазило оповещение.
 ///////////////////////////////////////////////////
 
+
+
 // Событие на кнопку отправки хода.
 // Отправка хода с модалкой.
 document.getElementById('end-turn-btn').addEventListener('click', () => {
@@ -1010,8 +1035,11 @@ document.getElementById('end-turn-btn').addEventListener('click', () => {
 async function postAct() {
     console.log("Запрос на отправку действий. 1");
     const token = localStorage.getItem('token');
-    try {             
-        const response = await fetch(`http://localhost:8000/post_act?game_id=${statusGame.game_id}`, {
+    // Получим url из локального хранилища. Устанавливается в menu.js
+    const apiUrl = localStorage.getItem('apiUrl');
+
+    try {
+        const response = await fetch(`${apiUrl}/post_act?game_id=${statusGame.game_id}`, {
                     
             method: 'POST',
             headers: {
@@ -1026,17 +1054,11 @@ async function postAct() {
             throw new Error('Сеть ответила с ошибкой: ' + response.status);
         } else {
             console.log("Запрос на отправку действий. 2");
-            // Что тут возвращается с сервера?
-            // let res = await response.json()
-            // console.log(res);
-            // actualVarGame(res);
-            // location.reload();
         }
 
     } catch (error) {
         console.error('Ошибка postAct:', error);
     }
-
 };
 
 // Функция отправки(подтверждения) хода.
@@ -1044,8 +1066,11 @@ async function postAct() {
 async function postTurn() {
     console.log("Запрос на отправку хода. 1");
     const token = localStorage.getItem('token');
-        try {             
-            const response = await fetch(`http://localhost:8000/post_turn?game_id=${statusGame.game_id}`, {
+    // Получим url из локального хранилища. Устанавливается в menu.js
+    const apiUrl = localStorage.getItem('apiUrl');
+
+        try {      
+            const response = await fetch(`${apiUrl}/post_turn?game_id=${statusGame.game_id}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок
@@ -1064,7 +1089,7 @@ async function postTurn() {
                 // let res = await response.json()
                 // console.log(res);
                 // actualVarGame(res);
-                // location.reload();
+                location.reload();
             }
 
         } catch (error) {
@@ -1078,8 +1103,11 @@ async function postTurn() {
 async function postInstantAction(action) {
     console.log("Запрос на отправку моментального действия.");
     const token = localStorage.getItem('token');
-        try {             
-            const response = await fetch(`http://localhost:8000/post_instant_action?game_id=${statusGame.game_id}`, {
+    // Получим url из локального хранилища. Устанавливается в menu.js
+    const apiUrl = localStorage.getItem('apiUrl');
+
+        try {                
+            const response = await fetch(`${apiUrl}/post_instant_action?game_id=${statusGame.game_id}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок
@@ -1110,10 +1138,12 @@ async function postInstantAction(action) {
 // Подтвердить получение хода, чтобы не вылазило оповещение
 async function confirmRecTurn() { 
     const token = localStorage.getItem('token');
+    // Получим url из локального хранилища. Устанавливается в menu.js
+    const apiUrl = localStorage.getItem('apiUrl');
     closeModal(); // Закроем модальное окошко
 
-    try {             
-        const response = await fetch(`http://localhost:8000/confirm_rec_turn?game_id=${statusGame.game_id}`, {
+    try {
+        const response = await fetch(`${apiUrl}/confirm_rec_turn?game_id=${statusGame.game_id}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок

@@ -9,11 +9,23 @@ const chooseNewGameList = document.querySelector('.choose-new-game');
 // Для создания новой игры
 const createNewGameList = document.querySelector('.create-new-game');
 
+// Получение адреса сервера из конфига.
+async function getConfig() {
+    const response = await fetch('./config/env.json');
+    if (!response.ok) {
+        throw new Error('Не удалось загрузить конфигурацию: ' + response.status);
+    }
+    return await response.json();
+}
+
 // Запрос статуса для отображения выбора одной из своих игр
 async function requestStatusMyGames() {
     const token = localStorage.getItem('token');
+    // Получим url из локального хранилища. Устанавливается в menu.js
+    const apiUrl = localStorage.getItem('apiUrl');
     try {
-        const response = await fetch(`http://localhost:8000/my_games`, {
+
+        const response = await fetch(`${apiUrl}/my_games`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок
@@ -68,8 +80,11 @@ function chooseGame(gamesList) {
 // Запрос статуса для отображения выбора новой игры
 async function requestStatusForNewGame() {
     const token = localStorage.getItem('token');
+    // Получим url из локального хранилища. Устанавливается в menu.js
+    const apiUrl = localStorage.getItem('apiUrl');
+
     try {
-        const response = await fetch(`http://localhost:8000/all_active_games`, {
+        const response = await fetch(`${apiUrl}/all_active_games`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок
@@ -151,8 +166,10 @@ function chooseNewGame(gamesList) {
 // Добавить игрока в запись в БД к выбранной игре
 async function addPlayerToGame(game_id){
     const token = localStorage.getItem('token');
+    // Получим url из локального хранилища. Устанавливается в menu.js
+    const apiUrl = localStorage.getItem('apiUrl');
     try {
-        const response = await fetch(`http://localhost:8000/add_player_to_game?game_id=${game_id}`, {
+        const response = await fetch(`${apiUrl}/add_player_to_game?game_id=${game_id}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок
@@ -173,8 +190,10 @@ async function addPlayerToGame(game_id){
 // При выборе игры, эта игра становится активной для бекенда и сразу идет перенаправление на страничку игры, скачивается "активная" игра с бека
 async function setActiveGame(id){
     const token = localStorage.getItem('token');
+    // Получим url из локального хранилища. Устанавливается в menu.js
+    const apiUrl = localStorage.getItem('apiUrl');
     try {
-        const response = await fetch(`http://localhost:8000/set_active_game?game_id=${id}`, {
+        const response = await fetch(`${apiUrl}/set_active_game?game_id=${id}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок

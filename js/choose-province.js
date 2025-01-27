@@ -4,11 +4,22 @@ console.log('Стрипт странички выбора провинции д�
 // Будущий список выбора игры
 const chooseList = document.querySelector('.choose-list');
 
+// Получение адреса сервера из конфига.
+async function getConfig() {
+    const response = await fetch('./config/env.json');
+    if (!response.ok) {
+        throw new Error('Не удалось загрузить конфигурацию: ' + response.status);
+    }
+    return await response.json();
+}
+
 // Запрос статуса для отображения выбора одной из своих игр
 async function requestStatusProvinces() {
     const token = localStorage.getItem('token');
+    // Получим url из локального хранилища. Устанавливается в menu.js
+    const apiUrl = localStorage.getItem('apiUrl');
     try {
-        const response = await fetch(`http://localhost:8000/get_all_empty_provinces`, {
+        const response = await fetch(`${apiUrl}/get_all_empty_provinces`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок
@@ -62,8 +73,10 @@ function chooseProvinces(provincesList) {
 
 async function setProvince(id) {
     const token = localStorage.getItem('token');
+    // Получим url из локального хранилища. Устанавливается в menu.js
+    const apiUrl = localStorage.getItem('apiUrl');
     try {
-        const response = await fetch(`http://localhost:8000/set_province_to_players?province_id=${id}`, {
+        const response = await fetch(`${apiUrl}/set_province_to_players?province_id=${id}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Здесь мы добавляем токен в заголовок
